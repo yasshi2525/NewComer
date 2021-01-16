@@ -4,9 +4,30 @@ function outerProduct(vec1: Point, vec2: Point): number {
 	return vec1.x * vec2.y - vec1.y * vec2.x;
 }
 
+export type FenceOption = {
+	scene: g.Scene;
+	panel: g.E;
+	line: number;
+};
+
 export class Fence {
 	private _nodes: Point[];
 	private _enclosure: boolean;
+	private _scene: g.Scene;
+	private _container: g.E;
+	private _line: number;
+
+	constructor(opts: FenceOption) {
+		this._scene = opts.scene;
+		this._line = opts.line;
+		this._container = new g.E({
+			scene: opts.scene,
+			parent: opts.panel,
+			width: opts.panel.width,
+			height: opts.panel.height,
+		});
+		opts.panel.append(this._container);
+	}
 
 	start(x: number, y: number): void {
 		this._nodes = [{x, y}];
@@ -22,12 +43,15 @@ export class Fence {
 			// 既存線と交差する場合、直近でできる空間を領域とする
 			const result = this.isCross(this._nodes[this._nodes.length - 1], { x, y });
 			if (result.cross) {
-				this._nodes = this._nodes.slice(result.index + 1);
-				this._enclosure = true;
+				const subset = this._nodes.slice(result.index + 1);
+				this.clear();
+				subset.forEach(n => this.pushNode(n));
+				this.pushNode({ x, y });
+				this.end();
 				return;
 			}
 		}
-		this._nodes.push({x, y});
+		this.pushNode({ x, y });
 	}
 
 	get enclosure(): boolean {
@@ -73,5 +97,33 @@ export class Fence {
 		}
 
 		return { cross: false, index: -1 };
+	}
+
+	private pushNode(pos: Point): void {
+		if (this._nodes.length > 0) {
+			const tail = this._nodes[this._nodes.length - 1];
+			const dx = pos.x - tail.x;
+			const dy = pos.y - tail.y;
+			const angle = Math.atan2(dy, dx) / Math.PI * 180;
+			const rect = new g.FilledRect({
+				scene: this._scene,
+				cssColor: "#000000",
+				width: Math.sqrt(dx * dx + dy * dy),
+				height: this._line,
+				x: (pos.x + tail.x) / 2,
+				y: (pos.y + tail.y) / 2,
+				anchorX: 0.5,
+				anchorY: 0.5,
+				angle,
+			});
+			this._container.append(rect);
+		}
+		this._nodes.push(pos);
+	}
+
+	private clear(): void {
+		console.log("clear");
+		this._container.children.forEach(c => c.destroy());
+		this._nodes = [];
 	}
 }

@@ -37,7 +37,9 @@ export class Customer {
 			scene: opts.scene,
 			src: opts.asset,
 			scaleX: opts.scale,
-			scaleY: opts.scale
+			scaleY: opts.scale,
+			anchorX: 0.5,
+			anchorY: 0.5
 		});
 
 		this._sprite.x = this._rg.generate() * this._w;
