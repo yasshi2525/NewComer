@@ -52,6 +52,21 @@
 			"type": "script",
 			"path": "script/title.js",
 			"global": true
+		},
+		"scorer": {
+			"type": "script",
+			"path": "script/scorer.js",
+			"global": true
+		},
+		"score_main": {
+			"type": "image",
+			"width": 688,
+			"height": 31,
+			"path": "image/score_main.png"
+		},
+		"score_main_glyphs": {
+			"type": "text",
+			"path": "text/score_main_glyphs.json"
 		}
 	},
 	"moduleMainScripts": {},

@@ -1,10 +1,11 @@
 import { Customer } from "./customer";
 import { Fence } from "./fence";
+import { Scorer } from "./scorer";
 
 export function createGameScene(game: g.Game): g.Scene {
 	const scene = new g.Scene({
 		game,
-		assetIds: ["customer_img"]
+		assetIds: ["customer_img", "score_main", "score_main_glyphs"]
 	});
 
 	scene.onLoad.add(() => {
@@ -15,30 +16,66 @@ export function createGameScene(game: g.Game): g.Scene {
 		});
 		scene.append(panel);
 
+		const scorer = new Scorer({
+			scene,
+			font: new g.BitmapFont({
+				src: scene.asset.getImageById("score_main"),
+				glyphInfo: JSON.parse(scene.asset.getTextById("score_main_glyphs").data)
+			}),
+			x: panel.width - 300,
+			y: 15,
+			panel,
+			size: 30,
+		});
+
+		let customers: Customer[] = [];
+
 		const fence = new Fence({
 			scene,
 			line: 1,
-			panel
+			panel,
+			onClose: (f: Fence) => {
+				customers.forEach((c) => {
+					if (f.isInner(c.x, c.y)) {
+						c.kill();
+						scorer.add(1);
+					}
+				});
+				const old = customers;
+				customers = [];
+				old.forEach((c) => {
+					if (!c.killed) {
+						customers.push(c);
+					}
+				});
+			}
 		});
 
-		fence.start(100, 100);
-		fence.extend(200, 100);
-		fence.extend(200, 200);
-		fence.extend(150, 0);
+		for (let i = 0; i < 30; i++) {
+			customers.push(new Customer({
+				asset: scene.asset.getImageById("customer_img"),
+				width: game.width,
+				height: game.height,
+				rg: game.random,
+				panel,
+				scene,
+				speed: 5,
+				turn: 1 * Math.PI / 2,
+				scale: 0.25,
+				opacity: 0.25,
+				fence
+			}));
+		}
 
-		// for (let i = 0; i < 10; i++) {
-		// 	new Customer({
-		// 		asset: scene.asset.getImageById("customer_img"),
-		// 		width: game.width,
-		// 		height: game.height,
-		// 		rg: game.random,
-		// 		panel,
-		// 		scene,
-		// 		speed: 5,
-		// 		turn: 1 * Math.PI / 2,
-		// 		scale: 0.25
-		// 	});
-		// }
+		scene.onUpdate.add(() => {
+			fence.clear();
+			fence.start(500, 300);
+
+			for (let i = 0; i < 360; i += 30) {
+				fence.extend(Math.cos(i / 180 * Math.PI) * 200 + 300, Math.sin(i / 180 * Math.PI) * 200 + 300);
+			}
+			fence.end();
+		});
 	});
 	return scene;
 }

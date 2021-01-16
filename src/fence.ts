@@ -8,6 +8,7 @@ export type FenceOption = {
 	scene: g.Scene;
 	panel: g.E;
 	line: number;
+	onClose: (f: Fence) => void;
 };
 
 export class Fence {
@@ -16,6 +17,8 @@ export class Fence {
 	private _scene: g.Scene;
 	private _container: g.E;
 	private _line: number;
+	private _pointerID: number;
+	private _onClose: (f: Fence) => void;
 
 	constructor(opts: FenceOption) {
 		this._scene = opts.scene;
@@ -25,7 +28,25 @@ export class Fence {
 			parent: opts.panel,
 			width: opts.panel.width,
 			height: opts.panel.height,
+			touchable: true,
 		});
+		this._container.onPointDown.add((arg) => {
+			if (!this._enclosure && this._nodes.length === 0) {
+				this._pointerID = arg.pointerId;
+				this.start(arg.point.x, arg.point.y);
+			}
+		});
+		this._container.onPointMove.add((arg) => {
+			if (!this._enclosure && this._pointerID === arg.pointerId) {
+				this.extend(arg.point.x + arg.startDelta.x, arg.point.y + arg.startDelta.y);
+			}
+		});
+		this._container.onPointUp.add((arg) => {
+			if (!this._enclosure && this._pointerID === arg.pointerId) {
+				this.end();
+			}
+		});
+		this._onClose = opts.onClose;
 		opts.panel.append(this._container);
 	}
 
@@ -36,6 +57,7 @@ export class Fence {
 	end(): void {
 		this.extend(this._nodes[0].x, this._nodes[0].y);
 		this._enclosure = true;
+		this._onClose(this);
 	}
 
 	extend(x: number, y: number): void {
@@ -73,6 +95,12 @@ export class Fence {
 		return cnt % 2 === 1;
 	}
 
+	clear(): void {
+		this._container.children?.forEach(c => c.destroy());
+		this._nodes = [];
+		this._enclosure = false;
+	}
+
 	private isCross(from: Point, to: Point): { cross: boolean; index: number } {
 		const vec1 = {
 			x: to.x - from.x,
@@ -91,7 +119,7 @@ export class Fence {
 				x: this._nodes[i+1].x - to.x,
 				y: this._nodes[i+1].y - to.y,
 			};
-			if (outerProduct(vec1, vec3) < 0 && outerProduct(vec2, vec4)) {
+			if (outerProduct(vec1, vec3) < 0 && outerProduct(vec2, vec4) < 0) {
 				return {cross: true, index: i};
 			}
 		}
@@ -121,9 +149,4 @@ export class Fence {
 		this._nodes.push(pos);
 	}
 
-	private clear(): void {
-		console.log("clear");
-		this._container.children.forEach(c => c.destroy());
-		this._nodes = [];
-	}
 }

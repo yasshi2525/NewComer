@@ -1,3 +1,5 @@
+import { Fence } from "./fence";
+
 export enum CustomerStatus {
 	NUTRAL,
 	ACTIVE
@@ -12,7 +14,9 @@ export type CustomerOption = {
 	scale: number;
 	speed: number;
 	turn: number;
+	opacity: number;
 	panel: g.E;
+	fence: Fence;
 };
 
 export class Customer {
@@ -24,6 +28,9 @@ export class Customer {
 	private _head: number;
 	private _speed: number;
 	private _turn: number;
+	private _opacity: number;
+	private _fence: Fence;
+	private _killed: boolean;
 
 	constructor(opts: CustomerOption) {
 		this._status = CustomerStatus.NUTRAL;
@@ -32,6 +39,8 @@ export class Customer {
 		this._h = opts.height;
 		this._speed = opts.speed;
 		this._turn = opts.turn;
+		this._opacity = opts.opacity;
+		this._fence = opts.fence;
 
 		this._sprite = new g.Sprite({
 			scene: opts.scene,
@@ -39,7 +48,8 @@ export class Customer {
 			scaleX: opts.scale,
 			scaleY: opts.scale,
 			anchorX: 0.5,
-			anchorY: 0.5
+			anchorY: 0.5,
+			opacity: opts.opacity
 		});
 
 		this._sprite.x = this._rg.generate() * this._w;
@@ -66,5 +76,22 @@ export class Customer {
 		this._sprite.x += this._speed * Math.cos(this._head);
 		this._sprite.y += this._speed * Math.sin(this._head);
 		this._sprite.modified();
+	}
+
+	kill(): void {
+		this._sprite.destroy();
+		this._killed = true;
+	}
+
+	get killed(): boolean {
+		return this._killed;
+	}
+
+	get x(): number {
+		return this._sprite.x;
+	}
+
+	get y(): number{
+		return this._sprite.y;
 	}
 }
