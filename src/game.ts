@@ -1,3 +1,4 @@
+import { Collabo } from "./collabo";
 import { Customer } from "./customer";
 import { Fence } from "./fence";
 import { Scorer } from "./scorer";
@@ -5,7 +6,14 @@ import { Scorer } from "./scorer";
 export function createGameScene(game: g.Game): g.Scene {
 	const scene = new g.Scene({
 		game,
-		assetIds: ["customer_img", "score_main", "score_main_glyphs"]
+		assetIds: [
+			"customer_img",
+			"score_main",
+			"score_main_glyphs",
+			"collabo_tier1",
+			"collabo_tier2",
+			"collabo_tier3",
+		]
 	});
 
 	scene.onLoad.add(() => {
@@ -51,6 +59,61 @@ export function createGameScene(game: g.Game): g.Scene {
 				});
 				fence.clear();
 			}
+		});
+
+		const collabos = [{
+			tier: 1,
+			rate: 0.1,
+			boost: 0.2,
+			coolDown: 10 * game.fps,
+			effect: 5 * game.fps,
+			minScore: 0,
+		}, {
+			tier: 2,
+			rate: 0.3,
+			boost: 0.4,
+			coolDown: 10 * game.fps,
+			effect: 5 * game.fps,
+			minScore: 10,
+		}, {
+			tier: 3,
+			rate: 0.7,
+			boost: 0.8,
+			coolDown: 20 * game.fps,
+			effect: 5 * game.fps,
+			minScore: 30
+		}];
+
+		collabos.forEach((info, i) => {
+			const container = new g.E({
+				scene,
+				parent: panel,
+				x: panel.width - 250,
+				y: i * 100 + 120,
+			});
+
+			new Collabo({
+				scene,
+				panel: container,
+				asset: scene.asset.getImageById(`collabo_tier${info.tier}`),
+				rate: info.rate,
+				boost: info.boost,
+				barColor: "#ff0000",
+				barHeight: 5,
+				coolDown: info.coolDown,
+				effect: info.effect,
+				minScore: info.minScore,
+				opacity: 0.25,
+				scorer,
+				onStart: (co) => {
+					customers.forEach(c => {
+						if (co.rate < game.random.generate()) {
+							c.attract(co.boost, co.effect);
+						}
+					});
+				},
+				onEnd: () => undefined,
+			});
 		});
 
 		for (let i = 0; i < 30; i++) {

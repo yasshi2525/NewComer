@@ -35,4 +35,8 @@ export class Scorer {
 		this._label.text = toText(this._score);
 		this._label.invalidate();
 	}
+
+	get value(): number {
+		return this._score;
+	}
 }

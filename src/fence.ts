@@ -57,7 +57,6 @@ export class Fence {
 			}
 		});
 		this._onClose = opts.onClose;
-		opts.panel.append(this._container);
 	}
 
 	start(x: number, y: number): void {
