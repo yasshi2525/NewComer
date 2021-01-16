@@ -33,6 +33,7 @@ export function createGameScene(game: g.Game): g.Scene {
 		const fence = new Fence({
 			scene,
 			line: 1,
+			rough: 5,
 			panel,
 			onClose: (f: Fence) => {
 				customers.forEach((c) => {
@@ -48,6 +49,7 @@ export function createGameScene(game: g.Game): g.Scene {
 						customers.push(c);
 					}
 				});
+				fence.clear();
 			}
 		});
 
@@ -67,15 +69,24 @@ export function createGameScene(game: g.Game): g.Scene {
 			}));
 		}
 
-		scene.onUpdate.add(() => {
-			fence.clear();
-			fence.start(500, 300);
+		// scene.onUpdate.add(() => {
+		// 	fence.clear();
+		// 	fence.start(500, 300);
 
-			for (let i = 0; i < 360; i += 30) {
-				fence.extend(Math.cos(i / 180 * Math.PI) * 200 + 300, Math.sin(i / 180 * Math.PI) * 200 + 300);
-			}
-			fence.end();
-		});
+		// 	for (let i = 0; i < 360; i += 30) {
+		// 		fence.extend(Math.cos(i / 180 * Math.PI) * 200 + 300, Math.sin(i / 180 * Math.PI) * 200 + 300);
+		// 	}
+		// 	fence.end();
+		// });
+		// fence.start(100, 100);
+		// fence.extend(150, 110);
+		// fence.extend(200, 100);
+		// fence.extend(250, 110);
+		// fence.extend(300, 100);
+		// fence.extend(400, 110);
+		// fence.extend(400, 10);
+		// fence.extend(130, 150);
+
 	});
 	return scene;
 }

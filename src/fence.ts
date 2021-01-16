@@ -8,6 +8,7 @@ export type FenceOption = {
 	scene: g.Scene;
 	panel: g.E;
 	line: number;
+	rough: number;
 	onClose: (f: Fence) => void;
 };
 
@@ -17,12 +18,16 @@ export class Fence {
 	private _scene: g.Scene;
 	private _container: g.E;
 	private _line: number;
+	private _rough: number;
+	private _rough_counter: number;
 	private _pointerID: number;
 	private _onClose: (f: Fence) => void;
 
 	constructor(opts: FenceOption) {
 		this._scene = opts.scene;
 		this._line = opts.line;
+		this._rough = opts.rough;
+		this._rough_counter = 0;
 		this._container = new g.E({
 			scene: opts.scene,
 			parent: opts.panel,
@@ -30,6 +35,7 @@ export class Fence {
 			height: opts.panel.height,
 			touchable: true,
 		});
+		this._nodes = [];
 		this._container.onPointDown.add((arg) => {
 			if (!this._enclosure && this._nodes.length === 0) {
 				this._pointerID = arg.pointerId;
@@ -38,7 +44,11 @@ export class Fence {
 		});
 		this._container.onPointMove.add((arg) => {
 			if (!this._enclosure && this._pointerID === arg.pointerId) {
-				this.extend(arg.point.x + arg.startDelta.x, arg.point.y + arg.startDelta.y);
+				this._rough_counter++;
+				if (this._rough_counter >= this._rough) {
+					this.extend(arg.point.x + arg.startDelta.x, arg.point.y + arg.startDelta.y);
+					this._rough_counter = 0;
+				}
 			}
 		});
 		this._container.onPointUp.add((arg) => {
@@ -96,7 +106,10 @@ export class Fence {
 	}
 
 	clear(): void {
-		this._container.children?.forEach(c => c.destroy());
+		const old = this._container.children;
+		if (old) {
+			[...old].forEach(c => c.destroy());
+		}
 		this._nodes = [];
 		this._enclosure = false;
 	}
@@ -111,15 +124,24 @@ export class Fence {
 				x: this._nodes[i+1].x - this._nodes[i].x,
 				y: this._nodes[i+1].y - this._nodes[i].y
 			};
-			const vec3 = {
+
+			const op1 = outerProduct(vec1, {
 				x: this._nodes[i].x - from.x,
 				y: this._nodes[i].y - from.y,
-			};
-			const vec4 = {
-				x: this._nodes[i+1].x - to.x,
-				y: this._nodes[i+1].y - to.y,
-			};
-			if (outerProduct(vec1, vec3) < 0 && outerProduct(vec2, vec4) < 0) {
+			}) * outerProduct(vec1, {
+				x: this._nodes[i+1].x - from.x,
+				y: this._nodes[i+1].y - from.y
+			});
+
+			const op2 = outerProduct(vec2, {
+				x: from.x - this._nodes[i].x,
+				y: from.y - this._nodes[i].y,
+			}) * outerProduct(vec2, {
+				x: to.x - this._nodes[i+1].x,
+				y: to.y - this._nodes[i+1].y
+			});
+
+			if (op1 < 0 && op2 < 0) {
 				return {cross: true, index: i};
 			}
 		}

@@ -4,12 +4,12 @@
   "version": "0.1.0",
   "description": "",
   "scripts": {
-    "build": "rimraf ./tmp ./script && tsc && akashic-cli-scan asset script",
-    "update": "akashic-cli-scan asset && akashic-cli-scan globalScripts",
+    "build": "rimraf ./tmp ./script && tsc && akashic scan asset script",
+    "update": "akashic scan asset && akashic scan globalScripts",
     "lint": "eslint -c .eslintrc.js \"src/**/*.ts\" --fix",
     "start": "akashic-sandbox .",
-    "export-zip": "rimraf game.zip && akashic-cli-export-zip -o game.zip -s",
-    "export-html": "rimraf game && akashic export html --magnify --output game",
+    "export-zip": "rimraf game.zip && akashic export zip -o game.zip -s",
+    "export-html": "rimraf game && akashic export html --magnify --output game --inject ./inject.html",
     "test": "jest"
   },
   "author": "",
