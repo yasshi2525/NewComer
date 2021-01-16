@@ -67,6 +67,12 @@
 		"score_main_glyphs": {
 			"type": "text",
 			"path": "text/score_main_glyphs.json"
+		},
+		"title_img": {
+			"type": "image",
+			"width": 405,
+			"height": 465,
+			"path": "image/title_img.png"
 		}
 	},
 	"moduleMainScripts": {},
