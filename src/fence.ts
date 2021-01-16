@@ -65,9 +65,12 @@ export class Fence {
 	}
 
 	end(): void {
-		this.extend(this._nodes[0].x, this._nodes[0].y);
-		this._enclosure = true;
-		this._onClose(this);
+		// pointMoveで強制終了し、pointUpした際、_nodesが[]になる
+		if (this._nodes.length > 0) {
+			this.extend(this._nodes[0].x, this._nodes[0].y);
+			this._enclosure = true;
+			this._onClose(this);
+		}
 	}
 
 	extend(x: number, y: number): void {
