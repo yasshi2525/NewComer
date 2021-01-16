@@ -1,10 +1,12 @@
+import { Customer, CustomerStatus } from "customer"
+
 describe("customer", () => {
   it("スポーン時はニュートラル状態", () => {
-    const c = new Customer();
+    const c = new Customer({});
     expect(c.status).toEqual(CustomerStatus.NUTRAL);
   });
   it("囲われると常連になる", () => {
-    const c = new Customer();
+    const c = new Customer({});
     c.attract();
     expect(c.status).toEqual(CustomerStatus.ACTIVE);
   });

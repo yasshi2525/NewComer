@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig-base.json",
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "rootDir": ".",
+    "baseUrl": "../src",
+    "tsBuildInfoFile": "../tmp/test.tsBuildInfoFile"
+  },
+  "include": ["./**/*.ts"],
+  "references": [
+    {
+      "path": "../tsconfig.json"
+    }
+  ]
+}

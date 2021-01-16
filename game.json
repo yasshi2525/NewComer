@@ -22,14 +22,20 @@
 			"systemId": "sound",
 			"duration": 250
 		},
-		"main": {
-			"type": "script",
-			"path": "script/main.js",
-			"global": true
+		"customer_img": {
+			"type": "image",
+			"width": 256,
+			"height": 256,
+			"path": "image/customer_img.png"
 		},
 		"customer": {
 			"type": "script",
 			"path": "script/customer.js",
+			"global": true
+		},
+		"fence": {
+			"type": "script",
+			"path": "script/fence.js",
 			"global": true
 		},
 		"game": {
@@ -37,16 +43,15 @@
 			"path": "script/game.js",
 			"global": true
 		},
+		"main": {
+			"type": "script",
+			"path": "script/main.js",
+			"global": true
+		},
 		"title": {
 			"type": "script",
 			"path": "script/title.js",
 			"global": true
-		},
-		"customer_img": {
-			"type": "image",
-			"width": 256,
-			"height": 256,
-			"path": "image/customer_img.png"
 		}
 	},
 	"moduleMainScripts": {},

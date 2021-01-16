@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "",
   "scripts": {
-    "build": "rimraf ./script && tsc && akashic-cli-scan asset script",
+    "build": "rimraf ./tmp ./script && tsc && akashic-cli-scan asset script",
     "update": "akashic-cli-scan asset && akashic-cli-scan globalScripts",
     "lint": "eslint -c .eslintrc.js \"src/**/*.ts\" --fix",
     "start": "akashic-sandbox .",
