@@ -1,4 +1,11 @@
+import { createGameScene } from "./game";
+
 function main(param: g.GameMainParameterObject): void {
+	const scene = createGameScene(g.game);
+	g.game.pushScene(scene);
+}
+
+function _main(param: g.GameMainParameterObject): void {
 	const scene = new g.Scene({
 		game: g.game,
 		// このシーンで利用するアセットのIDを列挙し、シーンに通知します
