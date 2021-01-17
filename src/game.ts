@@ -2,12 +2,14 @@ import { Collabo } from "./collabo";
 import { Customer } from "./customer";
 import { Fence } from "./fence";
 import { Scorer } from "./scorer";
+import { Tweeter } from "./tweeter";
 
 export function createGameScene(game: g.Game): g.Scene {
 	const scene = new g.Scene({
 		game,
 		assetIds: [
 			"customer_img",
+			"tweet_img",
 			"score_main",
 			"score_main_glyphs",
 			"collabo_tier1",
@@ -36,7 +38,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			size: 30,
 		});
 
-		let customers: Customer[] = [];
+		let customers: {c: Customer; t: Tweeter}[] = [];
 
 		const fence = new Fence({
 			scene,
@@ -44,17 +46,18 @@ export function createGameScene(game: g.Game): g.Scene {
 			rough: 5,
 			panel,
 			onClose: (f: Fence) => {
-				customers.forEach((c) => {
-					if (f.isInner(c.x, c.y)) {
-						c.kill();
+				customers.forEach((obj) => {
+					if (f.isInner(obj.c.x, obj.c.y)) {
+						obj.c.kill();
+						obj.t.kill();
 						scorer.add(1);
 					}
 				});
 				const old = customers;
 				customers = [];
-				old.forEach((c) => {
-					if (!c.killed) {
-						customers.push(c);
+				old.forEach((obj) => {
+					if (!obj.c.killed) {
+						customers.push(obj);
 					}
 				});
 				fence.clear();
@@ -106,9 +109,9 @@ export function createGameScene(game: g.Game): g.Scene {
 				opacity: 0.25,
 				scorer,
 				onStart: (co) => {
-					customers.forEach(c => {
-						if (co.rate < game.random.generate()) {
-							c.attract(co.boost, co.effect);
+					customers.forEach(obj => {
+						if (game.random.generate() < co.rate ) {
+							obj.c.attract(co.boost, co.effect);
 						}
 					});
 				},
@@ -117,7 +120,7 @@ export function createGameScene(game: g.Game): g.Scene {
 		});
 
 		for (let i = 0; i < 30; i++) {
-			customers.push(new Customer({
+			const c = new Customer({
 				asset: scene.asset.getImageById("customer_img"),
 				width: game.width,
 				height: game.height,
@@ -129,7 +132,50 @@ export function createGameScene(game: g.Game): g.Scene {
 				scale: 0.25,
 				opacity: 0.25,
 				fence
-			}));
+			});
+
+			const t = new Tweeter({
+				asset: scene.asset.getImageById("tweet_img"),
+				effect: 1 * game.fps,
+				delay: 3 * game.fps,
+				coolDown: 3 * game.fps,
+				font: new g.DynamicFont({
+					game,
+					fontFamily: "sans-serif",
+					size: 15
+				}),
+				scene,
+				panel,
+				position: () => c.position,
+				rand: game.random,
+				size: 15,
+				events: {
+					start: {
+						messages: ["わこつ", "初見", "初めまして", "やぁ", "よぉ", "うぃっす", "こんにちは"],
+						rate: 0.5
+					},
+					normal: {
+						messages: ["ｗ", "ｗｗｗ", "草", "わかる", "それな", "うん", "ノ", "8888"],
+						rate: 0.1
+					},
+					advertise: {
+						messages: ["広告から", "放送と聞いて", "面白そう", "広告から来ました", "呼ばれた気がして"],
+						rate: 0.3
+					},
+					collabo: {
+						messages: ["ktkr", "あの人じゃん！", "キター！", "盛り上がってきた", "うおおお"],
+						rate: 0.5
+					},
+					end: {
+						messages: ["乙", "お疲れ", "またね", "バイバイ", "楽しかった"],
+						rate: 0.2
+					}
+				}
+			});
+
+			t.start();
+
+			customers.push({c, t});
 		}
 
 		// scene.onUpdate.add(() => {

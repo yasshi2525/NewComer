@@ -47,6 +47,7 @@ export class Customer {
 
 		this._sprite = new g.Sprite({
 			scene: opts.scene,
+			parent: opts.panel,
 			src: opts.asset,
 			scaleX: opts.scale,
 			scaleY: opts.scale,
@@ -63,7 +64,6 @@ export class Customer {
 		this._sprite.onUpdate.add(() => {
 			this.step();
 		});
-		opts.panel.append(this._sprite);
 	}
 
 	attract(boost: number, effect: number): void {
@@ -116,7 +116,11 @@ export class Customer {
 		return this._sprite.x;
 	}
 
-	get y(): number{
+	get y(): number {
 		return this._sprite.y;
+	}
+
+	get position(): { x: number; y: number } {
+		return {x: this._sprite.x, y: this._sprite.y};
 	}
 }
