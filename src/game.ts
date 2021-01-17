@@ -78,8 +78,8 @@ export function createGameScene(game: g.Game): g.Scene {
 
 		const fence = new Fence({
 			scene,
-			line: 1,
-			rough: 5,
+			line: 5,
+			rough: 3,
 			panel: fenceLayer,
 			onClose: (f: Fence) => {
 				customers.forEach((obj) => {
