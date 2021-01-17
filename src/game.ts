@@ -19,12 +19,42 @@ export function createGameScene(game: g.Game): g.Scene {
 	});
 
 	scene.onLoad.add(() => {
-		const panel = new g.E({
+		const container = new g.E({
 			scene,
 			width: game.width,
 			height: game.height
 		});
-		scene.append(panel);
+		scene.append(container);
+		const customerLayer = new g.E({
+			scene,
+			parent: container,
+			width: container.width,
+			height: container.height
+		});
+		const tweetLayer = new g.E({
+			scene,
+			parent: container,
+			width: container.width,
+			height: container.height
+		});
+		const fenceLayer = new g.E({
+			scene,
+			parent: container,
+			width: container.width,
+			height: container.height
+		});
+		const collaboLayer = new g.E({
+			scene,
+			parent: container,
+			width: container.width,
+			height: container.height
+		});
+		const scoreLayer = new g.E({
+			scene,
+			parent: container,
+			width: container.width,
+			height: container.height
+		});
 
 		const scorer = new Scorer({
 			scene,
@@ -32,9 +62,9 @@ export function createGameScene(game: g.Game): g.Scene {
 				src: scene.asset.getImageById("score_main"),
 				glyphInfo: JSON.parse(scene.asset.getTextById("score_main_glyphs").data)
 			}),
-			x: panel.width - 300,
+			x: scoreLayer.width - 300,
 			y: 15,
-			panel,
+			panel: scoreLayer,
 			size: 30,
 		});
 
@@ -44,7 +74,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			scene,
 			line: 1,
 			rough: 5,
-			panel,
+			panel: fenceLayer,
 			onClose: (f: Fence) => {
 				customers.forEach((obj) => {
 					if (f.isInner(obj.c.x, obj.c.y)) {
@@ -90,8 +120,8 @@ export function createGameScene(game: g.Game): g.Scene {
 		collabos.forEach((info, i) => {
 			const container = new g.E({
 				scene,
-				parent: panel,
-				x: panel.width - 250,
+				parent: collaboLayer,
+				x: collaboLayer.width - 250,
 				y: i * 100 + 120,
 			});
 
@@ -119,16 +149,16 @@ export function createGameScene(game: g.Game): g.Scene {
 			});
 		});
 
-		for (let i = 0; i < 30; i++) {
+		for (let i = 0; i < 50; i++) {
 			const c = new Customer({
 				asset: scene.asset.getImageById("customer_img"),
 				width: game.width,
 				height: game.height,
 				rg: game.random,
-				panel,
+				panel: customerLayer,
 				scene,
-				speed: 5,
-				turn: 1 * Math.PI / 2,
+				speed: 3,
+				turn: 0.2 * Math.PI / 2,
 				scale: 0.25,
 				opacity: 0.25,
 				fence
@@ -136,8 +166,8 @@ export function createGameScene(game: g.Game): g.Scene {
 
 			const t = new Tweeter({
 				asset: scene.asset.getImageById("tweet_img"),
-				effect: 1 * game.fps,
-				delay: 3 * game.fps,
+				effect: 3 * game.fps,
+				delay: 1 * game.fps,
 				coolDown: 3 * game.fps,
 				font: new g.DynamicFont({
 					game,
@@ -145,14 +175,15 @@ export function createGameScene(game: g.Game): g.Scene {
 					size: 15
 				}),
 				scene,
-				panel,
+				panel: tweetLayer,
 				position: () => c.position,
 				rand: game.random,
 				size: 15,
+				scale: 0.25,
 				events: {
 					start: {
 						messages: ["わこつ", "初見", "初めまして", "やぁ", "よぉ", "うぃっす", "こんにちは"],
-						rate: 0.5
+						rate: 0.4
 					},
 					normal: {
 						messages: ["ｗ", "ｗｗｗ", "草", "わかる", "それな", "うん", "ノ", "8888"],

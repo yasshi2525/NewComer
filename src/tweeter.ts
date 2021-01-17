@@ -12,6 +12,7 @@ export type TweeterOption = {
 	asset: g.ImageAsset;
 	font: g.Font;
 	size: number;
+	scale: number;
 	position: () => { x: number; y: number };
 	effect: number;
 	coolDown: number;
@@ -28,7 +29,7 @@ export type TweeterOption = {
 export class Tweeter {
 	private _scene: g.Scene;
 	private _rand: g.RandomGenerator;
-	private _panel: g.E;
+	private _container: g.E;
 	private _sprite: g.Sprite;
 	private _label: g.Label;
 	private _position: () => { x: number; y: number };
@@ -48,7 +49,6 @@ export class Tweeter {
 	constructor(opts: TweeterOption) {
 		this._scene = opts.scene;
 		this._rand = opts.rand;
-		this._panel = opts.panel;
 		this._position = opts.position;
 		this._effect = opts.effect;
 		this._effect_count = 0;
@@ -58,28 +58,33 @@ export class Tweeter {
 		this._delay_count = 0;
 		this._event = opts.events;
 
-		const pos = opts.position();
+		this._container = new g.E({
+			scene: opts.scene,
+			parent: opts.panel,
+		});
+		this._container.hide();
 
 		this._sprite = new g.Sprite({
 			scene: opts.scene,
-			parent: opts.panel,
+			parent: this._container,
 			src: opts.asset,
-			x: pos.x,
-			y: pos.y - opts.asset.height
+			scaleX: opts.scale * 2,
+			scaleY: opts.scale,
 		});
-		this._sprite.hide();
 
 		this._label = new g.Label({
 			scene: opts.scene,
-			parent: this._sprite,
+			parent: this._container,
 			font: opts.font,
 			text: "",
 			fontSize: opts.size,
+			x: this._sprite.width * this._sprite.scaleX / 8,
+			y: this._sprite.height * this._sprite.scaleY / 2 - opts.size
 		});
 	}
 
 	start(): void {
-		if (this._coolDown_count === 0 && this._event.start.rate < this._rand.generate()) {
+		if (this._coolDown_count <= 0 && this._rand.generate() < this._event.start.rate) {
 			this.tweet(this._event.start.messages);
 		}
 	}
@@ -87,6 +92,7 @@ export class Tweeter {
 	kill(): void {
 		this._label.destroy();
 		this._sprite.destroy();
+		this._container.destroy();
 	}
 
 	private tweet(msgs: string[]): void {
@@ -101,7 +107,7 @@ export class Tweeter {
 			onEnd: () => {
 				this._coolDown_count = 0	;
 			}
-		}, this._coolDown, this._sprite);
+		}, this._coolDown, this._container);
 
 		// effect after delay
 		appendCountDown({
@@ -116,19 +122,36 @@ export class Tweeter {
 				appendCountDown({
 					onStart: () => {
 						this._effect_count = this._effect;
-						this._sprite.show();
+						const pos = this.position();
+						this._container.x = pos.x;
+						this._container.y = pos.y;
+						this._container.modified();
+						this._container.show();
 						const i = Math.floor(this._rand.generate() * msgs.length);
 						this._label.text = msgs[i];
 						this._label.invalidate();
 					},
 					onCount: () => {
 						this._effect_count--;
+						const pos = this.position();
+						this._container.x = pos.x;
+						this._container.y = pos.y;
+						this._container.modified();
 					},
 					onEnd: () => {
-						this._effect_count = 0	;
+						this._container.hide();
+						this._effect_count = 0;
 					}
-				}, this._effect, this._sprite);
+				}, this._effect, this._container);
 			}
-		}, this._delay * this._rand.generate(), this._sprite);
+		}, this._delay * this._rand.generate(), this._container);
+	}
+
+	private position(): { x: number; y: number } {
+		const pos = this._position();
+		return {
+			x: pos.x - this._sprite.width / 2 * this._sprite.scaleX,
+			y: pos.y - this._sprite.height * 1.5 * this._sprite.scaleY
+		};
 	}
 }
