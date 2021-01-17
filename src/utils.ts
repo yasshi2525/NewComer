@@ -1,7 +1,7 @@
 export function appendCountDown(
 	callback: {
 		onStart?: () => void;
-		onCount?: () => void;
+		onCount?: (c: number) => void;
 		onEnd?: () => void;
 	},
 	effect: number,
@@ -19,7 +19,7 @@ export function appendCountDown(
 			return;
 		}
 		if (callback.onCount) {
-			callback.onCount();
+			callback.onCount(count);
 		}
 		count--;
 	};

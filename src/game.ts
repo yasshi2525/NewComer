@@ -140,9 +140,28 @@ export function createGameScene(game: g.Game): g.Scene {
 			line: 5,
 			rough: 2,
 			panel: fenceLayer,
+			font: new g.DynamicFont({
+				game,
+				fontFamily: "sans-serif",
+				size: 30
+			}),
+			fontSize: 30,
+			fade: 1 * game.fps,
 			onClose: (f: Fence) => {
+				let rate = 0;
+				switch (f.tier) {
+					case 0:
+						rate = 0.25;
+						break;
+					case 1:
+					case 2:
+						rate = 0.5;
+						break;
+					default:
+						rate = 0.75;
+				}
 				customers.forEach((obj) => {
-					if (f.isInner(obj.c.x, obj.c.y)) {
+					if (game.random.generate() < rate && f.isInner(obj.c.x, obj.c.y)) {
 						obj.c.kill();
 						obj.t.kill();
 						scorer.add(1);
@@ -229,11 +248,18 @@ export function createGameScene(game: g.Game): g.Scene {
 				height: game.height,
 				rg: game.random,
 				panel: customerLayer,
+				font: new g.DynamicFont({
+					game,
+					fontFamily: "sans-serif",
+					size: 15
+				}),
+				fontSize: 15,
 				scene,
 				speed: 3,
 				turn: 0.2 * Math.PI / 2,
 				scale: 0.25,
 				opacity: 0.25,
+				fade: 1 * game.fps,
 				fence
 			});
 

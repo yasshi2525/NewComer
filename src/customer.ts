@@ -1,9 +1,5 @@
 import { Fence } from "./fence";
-
-export enum CustomerStatus {
-	NUTRAL,
-	ACTIVE
-}
+import { appendCountDown } from "./utils";
 
 export type CustomerOption = {
 	rg: g.RandomGenerator;
@@ -11,17 +7,23 @@ export type CustomerOption = {
 	height: number;
 	scene: g.Scene;
 	asset: g.ImageAsset;
+	panel: g.E;
+	font: g.Font;
+	fontSize: number;
 	scale: number;
 	speed: number;
 	turn: number;
+	fade: number;
 	opacity: number;
-	panel: g.E;
 	fence: Fence;
 };
 
 export class Customer {
-	private _status: CustomerStatus;
+	private _scene: g.Scene;
 	private _panel: g.E;
+	private _asset: g.ImageAsset;
+	private _font: g.Font;
+	private _fontSize: number;
 	private _sprite: g.Sprite;
 	private _rg: g.RandomGenerator;
 	private _w: number;
@@ -30,6 +32,8 @@ export class Customer {
 	private _speed: number;
 	private _turn: number;
 	private _boost: number;
+	private _fade: number;
+	private _scale: number;
 	private _opacity: number;
 	private _fence: Fence;
 	private _killed: boolean;
@@ -41,25 +45,23 @@ export class Customer {
 		this._speed = opts.speed;
 		this._turn = opts.turn;
 		this._boost = 1.0;
+		this._fade = opts.fade;
 		this._opacity = opts.opacity;
+		this._scale = opts.scale;
 		this._fence = opts.fence;
+		this._scene = opts.scene;
+		this._asset = opts.asset;
 		this._panel = opts.panel;
+		this._font = opts.font;
+		this._fontSize = opts.fontSize;
 
-		this._sprite = new g.Sprite({
-			scene: opts.scene,
-			parent: opts.panel,
-			src: opts.asset,
-			scaleX: opts.scale,
-			scaleY: opts.scale,
-			anchorX: 0.5,
-			anchorY: 0.5,
-			opacity: opts.opacity
-		});
+		this._sprite = this.appendSprite(
+			opts.panel,
+			this._rg.generate() * this._w,
+			this._rg.generate() * this._h
+		);
 
-		this._sprite.x = this._rg.generate() * this._w;
-		this._sprite.y = this._rg.generate() * this._h;
 		this._head = this._rg.generate() * Math.PI * 2;
-		this._sprite.modified();
 
 		this._sprite.onUpdate.add(() => {
 			this.step();
@@ -85,10 +87,6 @@ export class Customer {
 		this._sprite.onUpdate.add(fn);
 	}
 
-	get status(): CustomerStatus {
-		return this._status;
-	}
-
 	step(): void {
 		if (this._boost > 1.0) {
 			this._head = Math.atan2(
@@ -106,6 +104,34 @@ export class Customer {
 	kill(): void {
 		this._sprite.destroy();
 		this._killed = true;
+		const container = new g.E({
+			scene: this._scene,
+			parent: this._panel,
+			x: this._sprite.x,
+			y: this._sprite.y,
+			width: this._sprite.width * this._sprite.scaleX,
+			height: this._sprite.height * this._sprite.scaleY,
+		});
+		this.appendSprite(container, 0, 0);
+		new g.Label({
+			scene: this._scene,
+			parent: container,
+			font: this._font,
+			fontSize: this._fontSize,
+			text: "成功！",
+			x: - this._fontSize * 1.5,
+			y: (this._sprite.height * this._sprite.scaleY + this._fontSize) / 2
+		});
+		appendCountDown({
+			onCount: (cnt: number) => {
+				container.opacity = cnt / this._fade;
+				container.modified();
+				container.y -= container.height / this._fade;
+			},
+			onEnd: () => {
+				container.destroy();
+			}
+		}, this._fade, this._panel);
 	}
 
 	get killed(): boolean {
@@ -126,5 +152,20 @@ export class Customer {
 
 	get isBoost(): boolean {
 		return this._boost > 1.0;
+	}
+
+	private appendSprite(parent: g.E, x: number, y: number): g.Sprite {
+		return new g.Sprite({
+			scene: this._scene,
+			parent,
+			src: this._asset,
+			scaleX: this._scale,
+			scaleY: this._scale,
+			anchorX: 0.5,
+			anchorY: 0.5,
+			opacity: this._opacity,
+			x,
+			y
+		});
 	}
 }
