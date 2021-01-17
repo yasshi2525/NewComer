@@ -123,4 +123,8 @@ export class Customer {
 	get position(): { x: number; y: number } {
 		return {x: this._sprite.x, y: this._sprite.y};
 	}
+
+	get isBoost(): boolean {
+		return this._boost > 1.0;
+	}
 }

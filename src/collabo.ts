@@ -14,6 +14,7 @@ export type CollaboOption = {
 	coolDown: number;
 	scorer: Scorer;
 	onStart: (c: Collabo) => void;
+	onCollabo: (c: Collabo) => void;
 	onEnd: (c: Collabo) => void;
 };
 
@@ -33,6 +34,7 @@ export class Collabo {
 	private _coolDown_count: number;
 	private _scorer: Scorer;
 	private _onStart: (c: Collabo) => void;
+	private _onCollabo: (c: Collabo) => void;
 	private _onEnd: (c: Collabo) => void;
 
 	constructor(opts: CollaboOption) {
@@ -45,6 +47,7 @@ export class Collabo {
 		this._coolDown_count = 0;
 		this._scorer = opts.scorer;
 		this._onStart = opts.onStart;
+		this._onCollabo = opts.onCollabo;
 		this._onEnd = opts.onEnd;
 
 		this._scene = opts.scene;
@@ -78,6 +81,7 @@ export class Collabo {
 						this._panel.onUpdate.remove(effect);
 						return;
 					}
+					this._onCollabo(this);
 					this._effect_count--;
 				};
 				this._panel.onUpdate.add(effect);

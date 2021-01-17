@@ -89,6 +89,18 @@ export class Tweeter {
 		}
 	}
 
+	normal(): void {
+		if (this._coolDown_count <= 0 && this._rand.generate() < this._event.normal.rate) {
+			this.tweet(this._event.normal.messages);
+		}
+	}
+
+	collabo(): void {
+		if (this._coolDown_count <= 0 && this._rand.generate() < this._event.collabo.rate) {
+			this.tweet(this._event.collabo.messages);
+		}
+	}
+
 	kill(): void {
 		this._label.destroy();
 		this._sprite.destroy();

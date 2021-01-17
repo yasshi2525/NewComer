@@ -68,7 +68,13 @@ export function createGameScene(game: g.Game): g.Scene {
 			size: 30,
 		});
 
-		let customers: {c: Customer; t: Tweeter}[] = [];
+		let customers: { c: Customer; t: Tweeter }[] = [];
+
+		customerLayer.onUpdate.add(() => {
+			customers.forEach(obj => {
+				obj.t.normal();
+			});
+		});
 
 		const fence = new Fence({
 			scene,
@@ -145,6 +151,13 @@ export function createGameScene(game: g.Game): g.Scene {
 						}
 					});
 				},
+				onCollabo: (co) => {
+					customers.forEach(obj => {
+						if (obj.c.isBoost) {
+							obj.t.collabo();
+						}
+					});
+				},
 				onEnd: () => undefined,
 			});
 		});
@@ -187,7 +200,7 @@ export function createGameScene(game: g.Game): g.Scene {
 					},
 					normal: {
 						messages: ["ｗ", "ｗｗｗ", "草", "わかる", "それな", "うん", "ノ", "8888"],
-						rate: 0.1
+						rate: 0.05
 					},
 					advertise: {
 						messages: ["広告から", "放送と聞いて", "面白そう", "広告から来ました", "呼ばれた気がして"],
@@ -195,7 +208,7 @@ export function createGameScene(game: g.Game): g.Scene {
 					},
 					collabo: {
 						messages: ["ktkr", "あの人じゃん！", "キター！", "盛り上がってきた", "うおおお"],
-						rate: 0.5
+						rate: 0.8
 					},
 					end: {
 						messages: ["乙", "お疲れ", "またね", "バイバイ", "楽しかった"],
