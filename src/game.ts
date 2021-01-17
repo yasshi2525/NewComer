@@ -218,7 +218,7 @@ export function createGameScene(game: g.Game): g.Scene {
 		const fence = new Fence({
 			scene,
 			line: 5,
-			rough: 2,
+			rough: 1,
 			panel: fenceLayer,
 			font: new g.DynamicFont({
 				game,
