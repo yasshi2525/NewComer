@@ -1,3 +1,4 @@
+import { Advertise } from "./advertise";
 import { Cast } from "./cast";
 import { Collabo } from "./collabo";
 import { Customer } from "./customer";
@@ -5,11 +6,84 @@ import { Fence } from "./fence";
 import { Scorer } from "./scorer";
 import { Tweeter } from "./tweeter";
 
+function createCustomer(opts: {
+	scene: g.Scene;
+	game: g.Game;
+	customerLayer: g.E;
+	tweetLayer: g.E;
+	fence: Fence;
+}): { c: Customer; t: Tweeter } {
+	const c = new Customer({
+		asset: opts.scene.asset.getImageById("customer_img"),
+		width: opts.game.width,
+		height: opts.game.height,
+		rg: opts.game.random,
+		panel: opts.customerLayer,
+		font: new g.DynamicFont({
+			game: opts.game,
+			fontFamily: "sans-serif",
+			size: 15
+		}),
+		fontSize: 15,
+		scene: opts.scene,
+		speed: 3,
+		turn: 0.2 * Math.PI / 2,
+		scale: 0.25,
+		opacity: 0.25,
+		fade: 1 * opts.game.fps,
+		fence: opts.fence
+	});
+
+	const t = new Tweeter({
+		asset: opts.scene.asset.getImageById("tweet_img"),
+		effect: 3 * opts.game.fps,
+		delay: 1 * opts.game.fps,
+		coolDown: 3 * opts.game.fps,
+		font: new g.DynamicFont({
+			game: opts.game,
+			fontFamily: "sans-serif",
+			size: 15
+		}),
+		scene: opts.scene,
+		panel: opts.tweetLayer,
+		position: () => c.position,
+		rand: opts.game.random,
+		size: 15,
+		scale: 0.25,
+		events: {
+			start: {
+				messages: ["わこつ", "初見", "初めまして", "やぁ", "よぉ", "うぃっす", "こんにちは"],
+				rate: 0.4
+			},
+			normal: {
+				messages: ["ｗ", "ｗｗｗ", "草", "わかる", "それな", "うん", "ノ", "8888"],
+				rate: 0.05
+			},
+			advertise: {
+				messages: ["広告から", "放送と聞いて", "面白そう", "広告から来ました", "呼ばれた気がして"],
+				rate: 0.3
+			},
+			collabo: {
+				messages: ["ktkr", "あの人じゃん！", "キター！", "盛り上がってきた", "うおおお"],
+				rate: 0.8
+			},
+			end: {
+				messages: ["乙", "お疲れ", "またね", "バイバイ", "楽しかった"],
+				rate: 0.2
+			}
+		}
+	});
+
+	t.start();
+	return {c, t};
+}
+
 export function createGameScene(game: g.Game): g.Scene {
 	const scene = new g.Scene({
 		game,
 		assetIds: [
 			"cast_img",
+			"advertise_img",
 			"customer_img",
 			"tweet_img",
 			"score_main",
@@ -33,13 +107,19 @@ export function createGameScene(game: g.Game): g.Scene {
 			width: container.width - 250,
 			height: container.height
 		});
+		const tweetLayer = new g.E({
+			scene,
+			parent: container,
+			width: container.width - 250,
+			height: container.height
+		});
 		const castLayer = new g.E({
 			scene,
 			parent: container,
 			width: container.width - 250,
 			height: container.height
 		});
-		const tweetLayer = new g.E({
+		const castTweetLayer = new g.E({
 			scene,
 			parent: container,
 			width: container.width - 250,
@@ -51,7 +131,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			width: container.width - 250,
 			height: container.height
 		});
-		const collaboLayer = new g.E({
+		const actionLayer = new g.E({
 			scene,
 			parent: container,
 			width: container.width,
@@ -82,7 +162,7 @@ export function createGameScene(game: g.Game): g.Scene {
 				size: 15
 			}),
 			scene,
-			panel: tweetLayer,
+			panel: castTweetLayer,
 			position: () => ({x: tweetLayer.width / 2, y: tweetLayer.height / 2}),
 			rand: game.random,
 			size: 15,
@@ -178,6 +258,36 @@ export function createGameScene(game: g.Game): g.Scene {
 			}
 		});
 
+		new Advertise({
+			scene,
+			panel: new g.E({
+				scene,
+				parent: actionLayer,
+				x: actionLayer.width - 250,
+				y: 50,
+			}),
+			asset: scene.asset.getImageById("advertise_img"),
+			barColor: "#ff0000",
+			barHeight: 5,
+			coolDown: 10 * game.fps,
+			opacity: 0.25,
+			onAdvertise: () => {
+				for (let i = 0; i < 10; i++) {
+					customers.push(createCustomer({
+						game,
+						scene,
+						fence,
+						customerLayer,
+						tweetLayer
+					}));
+				}
+				castTweeter.advertise();
+				customers.forEach((obj) => {
+					obj.t.advertise();
+				});
+			}
+		});
+
 		const collabos = [{
 			tier: 1,
 			rate: 0.1,
@@ -204,8 +314,8 @@ export function createGameScene(game: g.Game): g.Scene {
 		collabos.forEach((info, i) => {
 			const container = new g.E({
 				scene,
-				parent: collaboLayer,
-				x: collaboLayer.width - 250,
+				parent: actionLayer,
+				x: actionLayer.width - 250,
 				y: i * 100 + 120,
 			});
 
@@ -241,70 +351,14 @@ export function createGameScene(game: g.Game): g.Scene {
 			});
 		});
 
-		for (let i = 0; i < 30; i++) {
-			const c = new Customer({
-				asset: scene.asset.getImageById("customer_img"),
-				width: game.width,
-				height: game.height,
-				rg: game.random,
-				panel: customerLayer,
-				font: new g.DynamicFont({
-					game,
-					fontFamily: "sans-serif",
-					size: 15
-				}),
-				fontSize: 15,
+		for (let i = 0; i < 20; i++) {
+			customers.push(createCustomer({
+				game,
 				scene,
-				speed: 3,
-				turn: 0.2 * Math.PI / 2,
-				scale: 0.25,
-				opacity: 0.25,
-				fade: 1 * game.fps,
-				fence
-			});
-
-			const t = new Tweeter({
-				asset: scene.asset.getImageById("tweet_img"),
-				effect: 3 * game.fps,
-				delay: 1 * game.fps,
-				coolDown: 3 * game.fps,
-				font: new g.DynamicFont({
-					game,
-					fontFamily: "sans-serif",
-					size: 15
-				}),
-				scene,
-				panel: tweetLayer,
-				position: () => c.position,
-				rand: game.random,
-				size: 15,
-				scale: 0.25,
-				events: {
-					start: {
-						messages: ["わこつ", "初見", "初めまして", "やぁ", "よぉ", "うぃっす", "こんにちは"],
-						rate: 0.4
-					},
-					normal: {
-						messages: ["ｗ", "ｗｗｗ", "草", "わかる", "それな", "うん", "ノ", "8888"],
-						rate: 0.05
-					},
-					advertise: {
-						messages: ["広告から", "放送と聞いて", "面白そう", "広告から来ました", "呼ばれた気がして"],
-						rate: 0.3
-					},
-					collabo: {
-						messages: ["ktkr", "あの人じゃん！", "キター！", "盛り上がってきた", "うおおお"],
-						rate: 0.8
-					},
-					end: {
-						messages: ["乙", "お疲れ", "またね", "バイバイ", "楽しかった"],
-						rate: 0.2
-					}
-				}
-			});
-
-			t.start();
-			customers.push({c, t});
+				fence,
+				customerLayer,
+				tweetLayer
+			}));
 		}
 		castTweeter.start();
 

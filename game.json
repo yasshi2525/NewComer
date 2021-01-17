@@ -123,6 +123,17 @@
 			"type": "script",
 			"path": "script/cast.js",
 			"global": true
+		},
+		"advertise_img": {
+			"type": "image",
+			"width": 250,
+			"height": 63,
+			"path": "image/advertise_img.png"
+		},
+		"advertise": {
+			"type": "script",
+			"path": "script/advertise.js",
+			"global": true
 		}
 	},
 	"moduleMainScripts": {},

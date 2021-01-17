@@ -101,6 +101,12 @@ export class Tweeter {
 		}
 	}
 
+	advertise(): void {
+		if (!this._isCoolDown && this._rand.generate() < this._event.advertise.rate) {
+			this.tweet(this._event.advertise.messages);
+		}
+	}
+
 	kill(): void {
 		this._label.destroy();
 		this._sprite.destroy();
