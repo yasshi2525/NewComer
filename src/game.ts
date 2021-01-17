@@ -1,3 +1,4 @@
+import { Cast } from "./cast";
 import { Collabo } from "./collabo";
 import { Customer } from "./customer";
 import { Fence } from "./fence";
@@ -8,6 +9,7 @@ export function createGameScene(game: g.Game): g.Scene {
 	const scene = new g.Scene({
 		game,
 		assetIds: [
+			"cast_img",
 			"customer_img",
 			"tweet_img",
 			"score_main",
@@ -28,19 +30,25 @@ export function createGameScene(game: g.Game): g.Scene {
 		const customerLayer = new g.E({
 			scene,
 			parent: container,
-			width: container.width,
+			width: container.width - 250,
+			height: container.height
+		});
+		const castLayer = new g.E({
+			scene,
+			parent: container,
+			width: container.width - 250,
 			height: container.height
 		});
 		const tweetLayer = new g.E({
 			scene,
 			parent: container,
-			width: container.width,
+			width: container.width - 250,
 			height: container.height
 		});
 		const fenceLayer = new g.E({
 			scene,
 			parent: container,
-			width: container.width,
+			width: container.width - 250,
 			height: container.height
 		});
 		const collaboLayer = new g.E({
@@ -54,6 +62,57 @@ export function createGameScene(game: g.Game): g.Scene {
 			parent: container,
 			width: container.width,
 			height: container.height
+		});
+
+		new Cast({
+			scene,
+			panel: castLayer,
+			asset: scene.asset.getImageById("cast_img"),
+			scale: 0.25
+		});
+
+		const castTweeter = new Tweeter({
+			asset: scene.asset.getImageById("tweet_img"),
+			effect: 2 * game.fps,
+			delay: 0,
+			coolDown: 2 * game.fps,
+			font: new g.DynamicFont({
+				game,
+				fontFamily: "sans-serif",
+				size: 15
+			}),
+			scene,
+			panel: tweetLayer,
+			position: () => ({x: tweetLayer.width / 2, y: tweetLayer.height / 2}),
+			rand: game.random,
+			size: 15,
+			scale: 0.25,
+			events: {
+				start: {
+					messages: ["どーも！"],
+					rate: 1.0
+				},
+				normal: {
+					messages: ["という訳でね", "そうなんですよ", "でしてね", "もうね", "聞いて下さいよ"],
+					rate: 1.0
+				},
+				advertise: {
+					messages: [],
+					rate: 0.0
+				},
+				collabo: {
+					messages: ["ゲストです！", "コラボしてます！", "よってらっしゃい"],
+					rate: 1.0
+				},
+				end: {
+					messages: ["またねー"],
+					rate: 1.0
+				}
+			}
+		});
+
+		castLayer.onUpdate.add(() => {
+			castTweeter.normal();
 		});
 
 		const scorer = new Scorer({
@@ -79,7 +138,7 @@ export function createGameScene(game: g.Game): g.Scene {
 		const fence = new Fence({
 			scene,
 			line: 5,
-			rough: 3,
+			rough: 2,
 			panel: fenceLayer,
 			onClose: (f: Fence) => {
 				customers.forEach((obj) => {
@@ -157,12 +216,13 @@ export function createGameScene(game: g.Game): g.Scene {
 							obj.t.collabo();
 						}
 					});
+					castTweeter.collabo();
 				},
 				onEnd: () => undefined,
 			});
 		});
 
-		for (let i = 0; i < 50; i++) {
+		for (let i = 0; i < 30; i++) {
 			const c = new Customer({
 				asset: scene.asset.getImageById("customer_img"),
 				width: game.width,
@@ -218,9 +278,9 @@ export function createGameScene(game: g.Game): g.Scene {
 			});
 
 			t.start();
-
 			customers.push({c, t});
 		}
+		castTweeter.start();
 
 		// scene.onUpdate.add(() => {
 		// 	fence.clear();

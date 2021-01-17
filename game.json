@@ -112,6 +112,17 @@
 			"width": 256,
 			"height": 256,
 			"path": "image/tweet_img.png"
+		},
+		"cast_img": {
+			"type": "image",
+			"width": 256,
+			"height": 256,
+			"path": "image/cast_img.png"
+		},
+		"cast": {
+			"type": "script",
+			"path": "script/cast.js",
+			"global": true
 		}
 	},
 	"moduleMainScripts": {},

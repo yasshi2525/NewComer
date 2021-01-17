@@ -7,15 +7,21 @@ export function appendCountDown(
 	effect: number,
 	panel: g.E): void {
 	let count = effect;
-	callback?.onStart();
+	if (callback.onStart) {
+		callback.onStart();
+	}
 	const fn = (): void => {
 		if (count <= 0) {
-			callback?.onEnd();
+			if (callback.onEnd) {
+				callback.onEnd();
+			}
 			panel.onUpdate.remove(fn);
 			return;
 		}
-    callback?.onCount();
-    count--;
+		if (callback.onCount) {
+			callback.onCount();
+		}
+		count--;
 	};
 	panel.onUpdate.add(fn);
 }

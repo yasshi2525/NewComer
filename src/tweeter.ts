@@ -34,11 +34,11 @@ export class Tweeter {
 	private _label: g.Label;
 	private _position: () => { x: number; y: number };
 	private _effect: number;
-	private _effect_count: number;
+	private _isEffect: boolean;
 	private _coolDown: number;
-	private _coolDown_count: number;
+	private _isCoolDown: boolean;
 	private _delay: number;
-	private _delay_count: number;
+	private _isDelay: boolean;
 	private _event: {
 		start: Contents;
 		normal: Contents;
@@ -51,11 +51,11 @@ export class Tweeter {
 		this._rand = opts.rand;
 		this._position = opts.position;
 		this._effect = opts.effect;
-		this._effect_count = 0;
+		this._isEffect = false;
 		this._coolDown = opts.coolDown;
-		this._coolDown_count = 0;
+		this._isCoolDown = false;
 		this._delay = opts.delay;
-		this._delay_count = 0;
+		this._isDelay = false;
 		this._event = opts.events;
 
 		this._container = new g.E({
@@ -84,19 +84,19 @@ export class Tweeter {
 	}
 
 	start(): void {
-		if (this._coolDown_count <= 0 && this._rand.generate() < this._event.start.rate) {
+		if (!this._isCoolDown && this._rand.generate() < this._event.start.rate) {
 			this.tweet(this._event.start.messages);
 		}
 	}
 
 	normal(): void {
-		if (this._coolDown_count <= 0 && this._rand.generate() < this._event.normal.rate) {
+		if (!this._isCoolDown && this._rand.generate() < this._event.normal.rate) {
 			this.tweet(this._event.normal.messages);
 		}
 	}
 
 	collabo(): void {
-		if (this._coolDown_count <= 0 && this._rand.generate() < this._event.collabo.rate) {
+		if (!this._isCoolDown && this._rand.generate() < this._event.collabo.rate) {
 			this.tweet(this._event.collabo.messages);
 		}
 	}
@@ -108,32 +108,29 @@ export class Tweeter {
 	}
 
 	private tweet(msgs: string[]): void {
+		if (msgs.length === 0) {
+			return;
+		}
 		// coolDown
 		appendCountDown({
 			onStart: () => {
-				this._coolDown_count = this._coolDown;
-			},
-			onCount: () => {
-				this._coolDown_count--;
+				this._isCoolDown = true;
 			},
 			onEnd: () => {
-				this._coolDown_count = 0	;
+				this._isCoolDown = false;
 			}
 		}, this._coolDown, this._container);
 
 		// effect after delay
 		appendCountDown({
 			onStart: () => {
-				this._delay_count = this._delay;
-			},
-			onCount: () => {
-				this._delay_count--;
+				this._isDelay = true;
 			},
 			onEnd: () => {
-				this._delay_count = 0;
+				this._isDelay = false;
 				appendCountDown({
 					onStart: () => {
-						this._effect_count = this._effect;
+						this._isEffect = true;
 						const pos = this.position();
 						this._container.x = pos.x;
 						this._container.y = pos.y;
@@ -144,7 +141,6 @@ export class Tweeter {
 						this._label.invalidate();
 					},
 					onCount: () => {
-						this._effect_count--;
 						const pos = this.position();
 						this._container.x = pos.x;
 						this._container.y = pos.y;
@@ -152,7 +148,7 @@ export class Tweeter {
 					},
 					onEnd: () => {
 						this._container.hide();
-						this._effect_count = 0;
+						this._isEffect = false;
 					}
 				}, this._effect, this._container);
 			}
