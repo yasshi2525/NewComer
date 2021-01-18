@@ -7,6 +7,8 @@ import { Scorer } from "./scorer";
 import { Ticker } from "./ticker";
 import { Tweeter } from "./tweeter";
 
+declare const window: { RPGAtsumaru: any };
+
 function createCustomer(opts: {
 	scene: g.Scene;
 	game: g.Game;
@@ -209,6 +211,91 @@ export function createGameScene(game: g.Game): g.Scene {
 			size: 30,
 			fps: game.fps,
 			time: 120,
+			onEnd: () => {
+				if (typeof window !== "undefined") {
+					const replay = new g.FilledRect({
+						scene,
+						parent: scoreLayer,
+						cssColor: "#aa88ff",
+						x: scoreLayer.width - 250,
+						y: scoreLayer.height - 100,
+						height: 50,
+						width: 200,
+						touchable: true,
+					});
+
+					new g.Label({
+						scene,
+						parent: replay,
+						text: "もう1回あそぶ",
+						font: new g.DynamicFont({
+							game,
+							fontFamily: "sans-serif",
+							size: 25
+						}),
+						fontSize: 25,
+						x: 20,
+						y: 20
+					});
+
+					replay.onPointUp.add(() => {
+						game.pushScene(createGameScene(game));
+					});
+
+					window.RPGAtsumaru.scoreboards
+						.setRecord(1, scorer.value)
+						.then(() => {
+							const ranking = new g.FilledRect({
+								scene,
+								parent: scoreLayer,
+								cssColor: "#aa88ff",
+								x: scoreLayer.width - 250,
+								y: scoreLayer.height - 160,
+								height: 50,
+								width: 200,
+								touchable: true,
+							});
+
+							window.RPGAtsumaru.scoreboards.getRecords(1).then((res: any) => {
+								new g.Label({
+									scene,
+									parent: ranking,
+									text: `Rank ${res.myRecord.rank}!`,
+									font: new g.DynamicFont({
+										game,
+										fontFamily: "sans-serif",
+										size: 15
+									}),
+									fontSize: 15,
+									x: 10,
+									y: 10
+								});
+								new g.Label({
+									scene,
+									parent: ranking,
+									text: "ランキング",
+									font: new g.DynamicFont({
+										game,
+										fontFamily: "sans-serif",
+										size: 25
+									}),
+									fontSize: 25,
+									x: 10,
+									y: 25
+								});
+							});
+
+							ranking.onPointUp.add(() => {
+								window.RPGAtsumaru.scoreboards.display(1);
+							});
+						});
+
+
+
+
+				}
+
+			}
 		});
 
 		const scorer = new Scorer({
@@ -338,9 +425,9 @@ export function createGameScene(game: g.Game): g.Scene {
 				scene,
 				parent: actionLayer,
 				x: actionLayer.width - 250,
-				y: i * 120 + 150,
+				y: i * 100 + 150,
 				width: 200,
-				height: 100
+				height: 90
 			});
 
 			new Collabo({

@@ -1,3 +1,5 @@
+import { appendCountDown } from "./utils";
+
 export type TickerOption = {
 	scene: g.Scene;
 	font: g.Font;
@@ -7,6 +9,7 @@ export type TickerOption = {
 	y: number;
 	fps: number;
 	time: number;
+	onEnd: () => void;
 };
 
 export class Ticker {
@@ -23,20 +26,29 @@ export class Ticker {
 			y: opts.y,
 			font: opts.font,
 			fontSize: opts.size,
-			text: this.toText(),
+			text: toText(this._remain, opts.fps),
 		});
 
-		opts.panel.onUpdate.add(() => {
-			const old = label.text;
-			label.text = this.toText();
-			if (old !== label.text) {
-				label.invalidate();
+		appendCountDown({
+			onCount: (cnt) => {
+				const old = label.text;
+				label.text = toText(this._remain, opts.fps);
+				if (old !== label.text) {
+					label.invalidate();
+				}
+			},
+			onEnd: () => {
+				opts.onEnd();
 			}
+		}, opts.time * opts.fps, opts.panel);
+
+		opts.panel.onUpdate.add(() => {
+
 			this._remain--;
 		});
 	}
+}
 
-	private toText(): string {
-		return `TIME:${("   "+Math.floor(this._remain / this._fps)).slice(-3)}`;
-	}
+function toText(frame: number, fps: number): string {
+	return `TIME:${("   "+Math.floor(frame / fps)).slice(-3)}`;
 }

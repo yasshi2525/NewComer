@@ -6,7 +6,10 @@ function main(param: g.GameMainParameterObject): void {
 	g.game.pushScene(scene);
 }
 
+declare const window: { RPGAtsumaru: any };
+
 function _main(param: g.GameMainParameterObject): void {
+	console.log(window);
 	const scene = new g.Scene({
 		game: g.game,
 		// このシーンで利用するアセットのIDを列挙し、シーンに通知します
