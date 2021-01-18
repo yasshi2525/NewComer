@@ -150,6 +150,12 @@ export class Customer {
 		return {x: this._sprite.x, y: this._sprite.y};
 	}
 
+	set position(v: {x: number; y: number}) {
+		this._sprite.x = v.x;
+		this._sprite.y = v.y;
+		this._sprite.modified();
+	}
+
 	get isBoost(): boolean {
 		return this._boost > 1.0;
 	}

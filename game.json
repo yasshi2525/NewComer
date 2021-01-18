@@ -24,8 +24,8 @@
 		},
 		"customer_img": {
 			"type": "image",
-			"width": 256,
-			"height": 256,
+			"width": 72,
+			"height": 72,
 			"path": "image/customer_img.png"
 		},
 		"customer": {
@@ -68,12 +68,6 @@
 			"type": "text",
 			"path": "text/score_main_glyphs.json"
 		},
-		"title_img": {
-			"type": "image",
-			"width": 405,
-			"height": 465,
-			"path": "image/title_img.png"
-		},
 		"collabo": {
 			"type": "script",
 			"path": "script/collabo.js",
@@ -97,8 +91,8 @@
 		},
 		"cast_img": {
 			"type": "image",
-			"width": 256,
-			"height": 256,
+			"width": 72,
+			"height": 72,
 			"path": "image/cast_img.png"
 		},
 		"cast": {
@@ -157,6 +151,48 @@
 			"type": "script",
 			"path": "script/ticker.js",
 			"global": true
+		},
+		"customer_fail": {
+			"type": "image",
+			"width": 72,
+			"height": 72,
+			"path": "image/customer_fail.png"
+		},
+		"customer_success": {
+			"type": "image",
+			"width": 72,
+			"height": 72,
+			"path": "image/customer_success.png"
+		},
+		"finger": {
+			"type": "image",
+			"width": 144,
+			"height": 144,
+			"path": "image/finger.png"
+		},
+		"title_inst1": {
+			"type": "image",
+			"width": 277,
+			"height": 45,
+			"path": "image/title_inst1.png"
+		},
+		"title_inst2": {
+			"type": "image",
+			"width": 577,
+			"height": 45,
+			"path": "image/title_inst2.png"
+		},
+		"title_text": {
+			"type": "image",
+			"width": 615,
+			"height": 91,
+			"path": "image/title_text.png"
+		},
+		"title_inst3": {
+			"type": "image",
+			"width": 412,
+			"height": 45,
+			"path": "image/title_inst3.png"
 		}
 	},
 	"moduleMainScripts": {},

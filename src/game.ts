@@ -9,9 +9,34 @@ import { Tweeter } from "./tweeter";
 
 declare const window: { RPGAtsumaru: any };
 
+const tweetEvent = {
+	start: {
+		messages: ["わこつ", "初見", "初めまして", "やぁ", "よぉ", "うぃっす", "こんにちは"],
+		rate: 0.4
+	},
+	normal: {
+		messages: ["ｗ", "ｗｗｗ", "草", "わかる", "それな", "うん", "ノ", "8888"],
+		rate: 0.05
+	},
+	advertise: {
+		messages: ["広告から", "放送と聞いて", "面白そう", "広告から来ました", "呼ばれた気がして"],
+		rate: 0.3
+	},
+	collabo: {
+		messages: ["ktkr", "あの人じゃん！", "キター！", "盛り上がってきた", "うおおお"],
+		rate: 0.8
+	},
+	end: {
+		messages: ["乙", "お疲れ", "またね", "バイバイ", "楽しかった"],
+		rate: 0.2
+	}
+};
+
 function createCustomer(opts: {
 	scene: g.Scene;
 	game: g.Game;
+	customerFont: g.Font;
+	tweetFont: g.Font;
 	customerLayer: g.E;
 	tweetLayer: g.E;
 	fence: Fence;
@@ -22,16 +47,12 @@ function createCustomer(opts: {
 		height: opts.game.height,
 		rg: opts.game.random,
 		panel: opts.customerLayer,
-		font: new g.DynamicFont({
-			game: opts.game,
-			fontFamily: "sans-serif",
-			size: 15
-		}),
+		font: opts.customerFont,
 		fontSize: 15,
 		scene: opts.scene,
 		speed: 3,
 		turn: 0.2 * Math.PI / 2,
-		scale: 0.25,
+		scale: 1,
 		opacity: 0.25,
 		fade: 1 * opts.game.fps,
 		fence: opts.fence
@@ -42,39 +63,14 @@ function createCustomer(opts: {
 		effect: 3 * opts.game.fps,
 		delay: 1 * opts.game.fps,
 		coolDown: 3 * opts.game.fps,
-		font: new g.DynamicFont({
-			game: opts.game,
-			fontFamily: "sans-serif",
-			size: 15
-		}),
+		font: opts.tweetFont,
 		scene: opts.scene,
 		panel: opts.tweetLayer,
 		position: () => c.position,
 		rand: opts.game.random,
 		size: 15,
 		scale: 0.25,
-		events: {
-			start: {
-				messages: ["わこつ", "初見", "初めまして", "やぁ", "よぉ", "うぃっす", "こんにちは"],
-				rate: 0.4
-			},
-			normal: {
-				messages: ["ｗ", "ｗｗｗ", "草", "わかる", "それな", "うん", "ノ", "8888"],
-				rate: 0.05
-			},
-			advertise: {
-				messages: ["広告から", "放送と聞いて", "面白そう", "広告から来ました", "呼ばれた気がして"],
-				rate: 0.3
-			},
-			collabo: {
-				messages: ["ktkr", "あの人じゃん！", "キター！", "盛り上がってきた", "うおおお"],
-				rate: 0.8
-			},
-			end: {
-				messages: ["乙", "お疲れ", "またね", "バイバイ", "楽しかった"],
-				rate: 0.2
-			}
-		}
+		events: tweetEvent
 	});
 
 	t.start();
@@ -152,7 +148,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			scene,
 			panel: castLayer,
 			asset: scene.asset.getImageById("cast_img"),
-			scale: 0.25
+			scale: 1
 		});
 
 		const castTweeter = new Tweeter({
@@ -289,12 +285,7 @@ export function createGameScene(game: g.Game): g.Scene {
 								window.RPGAtsumaru.scoreboards.display(1);
 							});
 						});
-
-
-
-
 				}
-
 			}
 		});
 
@@ -318,6 +309,17 @@ export function createGameScene(game: g.Game): g.Scene {
 			});
 		});
 
+		const customerFont = new g.DynamicFont({
+			game,
+			fontFamily: "sans-serif",
+			size: 15
+		});
+		const tweetFont = new g.DynamicFont({
+			game,
+			fontFamily: "sans-serif",
+			size: 15
+		});
+
 		const fence = new Fence({
 			scene,
 			line: 5,
@@ -330,6 +332,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			}),
 			fontSize: 30,
 			fade: 1 * game.fps,
+			isPrintEffect: true,
 			onClose: (f: Fence) => {
 				let rate = 0;
 				switch (f.tier) {
@@ -379,6 +382,8 @@ export function createGameScene(game: g.Game): g.Scene {
 					customers.push(createCustomer({
 						game,
 						scene,
+						customerFont,
+						tweetFont,
 						fence,
 						customerLayer,
 						tweetLayer
@@ -487,6 +492,8 @@ export function createGameScene(game: g.Game): g.Scene {
 			customers.push(createCustomer({
 				game,
 				scene,
+				customerFont,
+				tweetFont,
 				fence,
 				customerLayer,
 				tweetLayer

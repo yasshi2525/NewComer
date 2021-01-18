@@ -2,7 +2,7 @@ import { createGameScene } from "./game";
 import { createTitleScene } from "./title";
 
 function main(param: g.GameMainParameterObject): void {
-	const scene = createGameScene(g.game);
+	const scene = createTitleScene(g.game);
 	g.game.pushScene(scene);
 }
 

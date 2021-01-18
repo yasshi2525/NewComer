@@ -15,6 +15,7 @@ export type FenceOption = {
 	rough: number;
 	onClose: (f: Fence) => void;
 	fade: number;
+	isPrintEffect: boolean;
 };
 
 export class Fence {
@@ -31,6 +32,7 @@ export class Fence {
 	private _pointerID: number;
 	private _onClose: (f: Fence) => void;
 	private _fade: number;
+	private _isPrintEffect: boolean;
 
 	constructor(opts: FenceOption) {
 		this._scene = opts.scene;
@@ -41,6 +43,7 @@ export class Fence {
 		this._rough = opts.rough;
 		this._rough_counter = 0;
 		this._fade = opts.fade;
+		this._isPrintEffect = opts.isPrintEffect;
 		this._container = new g.E({
 			scene: opts.scene,
 			parent: opts.panel,
@@ -219,24 +222,26 @@ export class Fence {
 				for (let i = 0; i < this._nodes.length - 1; i++) {
 					this.appendRect(this._nodes[i], this._nodes[i + 1], effect);
 				}
-				new g.Label({
-					scene: this._scene,
-					parent: effect,
-					font: this._font,
-					fontSize: this._fontSize,
-					x: effect.width / 2.5,
-					y: effect.height * 2 / 3,
-					text: `範囲: ${this.area}`
-				});
-				new g.Label({
-					scene: this._scene,
-					parent: effect,
-					font: this._font,
-					fontSize: this._fontSize,
-					x: effect.width / 2.5,
-					y: effect.height * 2 / 3 + this._fontSize * 1.5,
-					text: `効果: ${this.effect}`
-				});
+				if (this._isPrintEffect) {
+					new g.Label({
+						scene: this._scene,
+						parent: effect,
+						font: this._font,
+						fontSize: this._fontSize,
+						x: effect.width / 2.5,
+						y: effect.height * 2 / 3,
+						text: `範囲: ${this.area}`
+					});
+					new g.Label({
+						scene: this._scene,
+						parent: effect,
+						font: this._font,
+						fontSize: this._fontSize,
+						x: effect.width / 2.5,
+						y: effect.height * 2 / 3 + this._fontSize * 1.5,
+						text: `効果: ${this.effect}`
+					});
+				}
 			},
 			onCount: (cnt: number) => {
 				effect.opacity = cnt / this._fade;
