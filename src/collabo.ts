@@ -4,9 +4,13 @@ import { appendCountDown } from "./utils";
 export type CollaboOption = {
 	scene: g.Scene;
 	panel: g.E;
-	asset: g.ImageAsset;
-	scale: number;
-	font: g.Font;
+	lockAsset: g.ImageAsset;
+	lockScale: number;
+	lockFont: g.Font;
+	collaboAseet: g.ImageAsset;
+	collaboScale: number;
+	collaboFont: g.Font;
+	collaboText: [string, string];
 	fontSize: number;
 	lockedColor: string;
 	enabledColor: string;
@@ -73,34 +77,68 @@ export class Collabo {
 			cssColor: opts.lockedColor,
 			width: opts.panel.width,
 			height: opts.panel.height,
-			touchable: true,
-			tag: "board"
+			touchable: true
 		});
 
 		this._lockSprite = new g.Sprite({
 			scene: opts.scene,
 			parent: this._board,
-			src: opts.asset,
-			scaleX: opts.scale,
-			scaleY: opts.scale,
-			x: (this._board.width - opts.asset.width * opts.scale) / 2,
-			y: (this._board.height - opts.asset.height * opts.scale) / 2 - opts.fontSize,
+			src: opts.lockAsset,
+			scaleX: opts.lockScale,
+			scaleY: opts.lockScale,
+			x: (this._board.width - opts.lockAsset.width * opts.lockScale) / 2,
+			y: (this._board.height - opts.lockAsset.height * opts.lockScale) / 2 - opts.fontSize,
 		});
+
 		this._lockLabel = new g.Label({
 			scene: opts.scene,
 			parent: this._board,
-			font: opts.font,
+			font: opts.lockFont,
 			fontSize: opts.fontSize,
 			text: `${this._minScore} 人の常連が必要です`,
 			x: this._board.width / 8,
-			y: (this._board.height - opts.asset.height * opts.scale) / 2 + opts.fontSize * 2
+			y: (this._board.height - opts.lockAsset.height * opts.lockScale) / 2 + opts.fontSize * 2
 		});
+
+		const collaboSprite = new g.Sprite({
+			scene: opts.scene,
+			parent: this._board,
+			src: opts.collaboAseet,
+			scaleX: opts.collaboScale,
+			scaleY: opts.collaboScale,
+			x: this._board.width / 32,
+			y: (this._board.height - opts.lockAsset.height * opts.collaboScale) / 2
+		});
+		collaboSprite.hide();
+		const collaboLabel1 = new g.Label({
+			scene: opts.scene,
+			parent: this._board,
+			font: opts.collaboFont,
+			fontSize: opts.fontSize,
+			text: opts.collaboText[0],
+			x: this._board.width / 3,
+			y: this._board.height / 2 - opts.fontSize * 1.5
+		});
+		collaboLabel1.hide();
+		const collaboLabel2 = new g.Label({
+			scene: opts.scene,
+			parent: this._board,
+			font: opts.collaboFont,
+			fontSize: opts.fontSize,
+			text: opts.collaboText[1],
+			x: this._board.width / 3,
+			y: this._board.height / 2 + opts.fontSize
+		});
+		collaboLabel2.hide();
 
 		// 得点追加による開放
 		opts.scorer.observe((s) => {
 			if (this._lockSprite.visible() && s.value >= this._minScore) {
 				this._lockSprite.hide();
 				this._lockLabel.hide();
+				collaboSprite.show();
+				collaboLabel1.show();
+				collaboLabel2.show();
 				this._board.cssColor = opts.enabledColor;
 			}
 		});

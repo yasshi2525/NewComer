@@ -89,6 +89,9 @@ export function createGameScene(game: g.Game): g.Scene {
 			"score_main",
 			"score_main_glyphs",
 			"collabo_lock",
+			"collabo_cast_tier1",
+			"collabo_cast_tier2",
+			"collabo_cast_tier3",
 		]
 	});
 
@@ -288,6 +291,8 @@ export function createGameScene(game: g.Game): g.Scene {
 
 		const collabos = [{
 			tier: 1,
+			name: "友人",
+			effectText: "薄口",
 			rate: 0.1,
 			boost: 0.2,
 			coolDown: 10 * game.fps,
@@ -295,6 +300,8 @@ export function createGameScene(game: g.Game): g.Scene {
 			minScore: 1,
 		}, {
 			tier: 2,
+			name: "中堅放送者",
+			effectText: "中",
 			rate: 0.3,
 			boost: 0.4,
 			coolDown: 10 * game.fps,
@@ -302,6 +309,8 @@ export function createGameScene(game: g.Game): g.Scene {
 			minScore: 10,
 		}, {
 			tier: 3,
+			name: "大物放送者",
+			effectText: "濃口",
 			rate: 0.7,
 			boost: 0.8,
 			coolDown: 20 * game.fps,
@@ -322,17 +331,25 @@ export function createGameScene(game: g.Game): g.Scene {
 			new Collabo({
 				scene,
 				panel: container,
-				asset: scene.asset.getImageById("collabo_lock"),
 				rate: info.rate,
 				boost: info.boost,
-				font: new g.DynamicFont({
+				lockAsset: scene.asset.getImageById("collabo_lock"),
+				lockFont: new g.DynamicFont({
 					game,
 					fontFamily: "sans-serif",
 					fontColor: "#ffffff",
 					size: 15
 				}),
+				lockScale: 0.125,
+				collaboAseet: scene.asset.getImageById(`collabo_cast_tier${info.tier}`),
+				collaboFont:new g.DynamicFont({
+					game,
+					fontFamily: "sans-serif",
+					size: 15
+				}),
+				collaboText: [`${info.name} とコラボ放送`, `効果: ${info.effectText}`],
+				collaboScale: 0.25,
 				fontSize: 15,
-				scale: 0.125,
 				enabledColor: "#88ff88",
 				disabledColor: "#888888",
 				lockedColor: "#666666",
