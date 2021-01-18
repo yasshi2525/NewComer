@@ -134,6 +134,42 @@
 			"type": "script",
 			"path": "script/advertise.js",
 			"global": true
+		},
+		"advertise_icon": {
+			"type": "image",
+			"width": 256,
+			"height": 256,
+			"path": "image/advertise_icon.png"
+		},
+		"attracted": {
+			"type": "image",
+			"width": 256,
+			"height": 256,
+			"path": "image/attracted.png"
+		},
+		"collabo_cast_tier1": {
+			"type": "image",
+			"width": 256,
+			"height": 256,
+			"path": "image/collabo_cast_tier1.png"
+		},
+		"collabo_cast_tier2": {
+			"type": "image",
+			"width": 256,
+			"height": 256,
+			"path": "image/collabo_cast_tier2.png"
+		},
+		"collabo_cast_tier3": {
+			"type": "image",
+			"width": 256,
+			"height": 256,
+			"path": "image/collabo_cast_tier3.png"
+		},
+		"collabo_lock": {
+			"type": "image",
+			"width": 256,
+			"height": 256,
+			"path": "image/collabo_lock.png"
 		}
 	},
 	"moduleMainScripts": {},

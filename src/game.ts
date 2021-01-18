@@ -88,9 +88,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			"tweet_img",
 			"score_main",
 			"score_main_glyphs",
-			"collabo_tier1",
-			"collabo_tier2",
-			"collabo_tier3",
+			"collabo_lock",
 		]
 	});
 
@@ -294,7 +292,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			boost: 0.2,
 			coolDown: 10 * game.fps,
 			effect: 5 * game.fps,
-			minScore: 0,
+			minScore: 1,
 		}, {
 			tier: 2,
 			rate: 0.3,
@@ -316,17 +314,32 @@ export function createGameScene(game: g.Game): g.Scene {
 				scene,
 				parent: actionLayer,
 				x: actionLayer.width - 250,
-				y: i * 100 + 120,
+				y: i * 150 + 120,
+				width: 200,
+				height: 130
 			});
 
 			new Collabo({
 				scene,
 				panel: container,
-				asset: scene.asset.getImageById(`collabo_tier${info.tier}`),
+				asset: scene.asset.getImageById("collabo_lock"),
 				rate: info.rate,
 				boost: info.boost,
-				barColor: "#ff0000",
-				barHeight: 5,
+				font: new g.DynamicFont({
+					game,
+					fontFamily: "sans-serif",
+					fontColor: "#ffffff",
+					size: 15
+				}),
+				fontSize: 15,
+				scale: 0.125,
+				enabledColor: "#88ff88",
+				disabledColor: "#888888",
+				lockedColor: "#666666",
+				effectColor: "#0000ff",
+				effectHeight: 10,
+				coolDownColor: "#ff0000",
+				coolDownHeight: 5,
 				coolDown: info.coolDown,
 				effect: info.effect,
 				minScore: info.minScore,

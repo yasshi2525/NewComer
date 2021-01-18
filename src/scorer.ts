@@ -16,9 +16,11 @@ export type ScorerOption = {
 export class Scorer {
 	private _score: number;
 	private _label: g.Label;
+	private _listners: ((s: Scorer) => void)[];
 
 	constructor(opts: ScorerOption) {
 		this._score = 0;
+		this._listners = [];
 		this._label = new g.Label({
 			scene: opts.scene,
 			x: opts.x,
@@ -32,8 +34,13 @@ export class Scorer {
 
 	add(score: number): void {
 		this._score += score;
+		this._listners.forEach(fn => fn(this));
 		this._label.text = toText(this._score);
 		this._label.invalidate();
+	}
+
+	observe(fn: (s: Scorer) => void): void {
+		this._listners.push(fn);
 	}
 
 	get value(): number {
