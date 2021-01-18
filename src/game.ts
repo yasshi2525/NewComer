@@ -4,6 +4,7 @@ import { Collabo } from "./collabo";
 import { Customer } from "./customer";
 import { Fence } from "./fence";
 import { Scorer } from "./scorer";
+import { Ticker } from "./ticker";
 import { Tweeter } from "./tweeter";
 
 function createCustomer(opts: {
@@ -196,6 +197,20 @@ export function createGameScene(game: g.Game): g.Scene {
 			castTweeter.normal();
 		});
 
+		new Ticker({
+			scene,
+			font: new g.BitmapFont({
+				src: scene.asset.getImageById("score_main"),
+				glyphInfo: JSON.parse(scene.asset.getTextById("score_main_glyphs").data)
+			}),
+			x: scoreLayer.width - 240,
+			y: 15,
+			panel: scoreLayer,
+			size: 30,
+			fps: game.fps,
+			time: 120,
+		});
+
 		const scorer = new Scorer({
 			scene,
 			font: new g.BitmapFont({
@@ -203,7 +218,7 @@ export function createGameScene(game: g.Game): g.Scene {
 				glyphInfo: JSON.parse(scene.asset.getTextById("score_main_glyphs").data)
 			}),
 			x: scoreLayer.width - 300,
-			y: 15,
+			y: 45,
 			panel: scoreLayer,
 			size: 30,
 		});
@@ -265,7 +280,7 @@ export function createGameScene(game: g.Game): g.Scene {
 				scene,
 				parent: actionLayer,
 				x: actionLayer.width - 250,
-				y: 50,
+				y: 80,
 			}),
 			asset: scene.asset.getImageById("advertise_img"),
 			barColor: "#ff0000",
@@ -323,9 +338,9 @@ export function createGameScene(game: g.Game): g.Scene {
 				scene,
 				parent: actionLayer,
 				x: actionLayer.width - 250,
-				y: i * 150 + 120,
+				y: i * 120 + 150,
 				width: 200,
-				height: 130
+				height: 100
 			});
 
 			new Collabo({

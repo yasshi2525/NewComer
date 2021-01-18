@@ -79,24 +79,6 @@
 			"path": "script/collabo.js",
 			"global": true
 		},
-		"collabo_tier1": {
-			"type": "image",
-			"width": 251,
-			"height": 99,
-			"path": "image/collabo_tier1.png"
-		},
-		"collabo_tier2": {
-			"type": "image",
-			"width": 246,
-			"height": 96,
-			"path": "image/collabo_tier2.png"
-		},
-		"collabo_tier3": {
-			"type": "image",
-			"width": 247,
-			"height": 94,
-			"path": "image/collabo_tier3.png"
-		},
 		"tweeter": {
 			"type": "script",
 			"path": "script/tweeter.js",
@@ -170,6 +152,11 @@
 			"width": 256,
 			"height": 256,
 			"path": "image/collabo_lock.png"
+		},
+		"ticker": {
+			"type": "script",
+			"path": "script/ticker.js",
+			"global": true
 		}
 	},
 	"moduleMainScripts": {},
