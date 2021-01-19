@@ -104,6 +104,7 @@ export function createTitleScene(game: g.Game): g.Scene {
 			isPrintEffect: false,
 			onClose: () => {
 				cs.forEach(c => c.kill());
+				f.clear();
 			}
 		});
 		animateFence({game, scene, panel: backgroundLayer, cs, f});

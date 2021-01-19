@@ -20,7 +20,7 @@ export type FenceOption = {
 
 export class Fence {
 	private _nodes: Point[];
-	private _enclosure: boolean;
+	private _isDrawing: boolean;
 	private _scene: g.Scene;
 	private _panel: g.E;
 	private _backPanel: g.E;
@@ -46,6 +46,7 @@ export class Fence {
 		this._rough_counter = 0;
 		this._fade = opts.fade;
 		this._isPrintEffect = opts.isPrintEffect;
+		this._isDrawing = false;
 
 		this._backPanel = new g.E({
 			scene: opts.scene,
@@ -70,13 +71,13 @@ export class Fence {
 
 		this._nodes = [];
 		this._sensor.onPointDown.add((arg) => {
-			if (!this._enclosure && this._nodes.length === 0) {
+			if (!this._isDrawing && this._nodes.length === 0) {
 				this._pointerID = arg.pointerId;
 				this.start(arg.point.x, arg.point.y);
 			}
 		});
 		this._sensor.onPointMove.add((arg) => {
-			if (!this._enclosure && this._pointerID === arg.pointerId) {
+			if (this._isDrawing && this._pointerID === arg.pointerId) {
 				this._rough_counter++;
 				if (this._rough_counter >= this._rough) {
 					this.extend(arg.point.x + arg.startDelta.x, arg.point.y + arg.startDelta.y);
@@ -85,7 +86,7 @@ export class Fence {
 			}
 		});
 		this._sensor.onPointUp.add((arg) => {
-			if (!this._enclosure && this._pointerID === arg.pointerId) {
+			if (this._isDrawing && this._pointerID === arg.pointerId) {
 				this.end();
 			}
 		});
@@ -93,6 +94,7 @@ export class Fence {
 	}
 
 	start(x: number, y: number): void {
+		this._isDrawing = true;
 		this._nodes = [{x, y}];
 	}
 
@@ -100,10 +102,10 @@ export class Fence {
 		// pointMoveで強制終了し、pointUpした際、_nodesが[]になる
 		if (this._nodes.length > 0) {
 			this.extend(this._nodes[0].x, this._nodes[0].y);
-			this._enclosure = true;
 			this.fade();
 			this._onClose(this);
 		}
+		this._isDrawing = false;
 	}
 
 	extend(x: number, y: number): void {
@@ -120,10 +122,6 @@ export class Fence {
 			}
 		}
 		this.pushNode({ x, y });
-	}
-
-	get enclosure(): boolean {
-		return this._enclosure;
 	}
 
 	isInner(x: number, y: number): boolean {
@@ -151,7 +149,7 @@ export class Fence {
 			[...old].forEach(c => c.destroy());
 		}
 		this._nodes = [];
-		this._enclosure = false;
+		this._isDrawing = false;
 	}
 
 	get tier(): number {

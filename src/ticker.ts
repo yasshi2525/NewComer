@@ -31,6 +31,7 @@ export class Ticker {
 
 		appendCountDown({
 			onCount: (cnt) => {
+				this._remain--;
 				const old = label.text;
 				label.text = toText(this._remain, opts.fps);
 				if (old !== label.text) {
@@ -41,11 +42,10 @@ export class Ticker {
 				opts.onEnd();
 			}
 		}, opts.time * opts.fps, opts.panel);
+	}
 
-		opts.panel.onUpdate.add(() => {
-
-			this._remain--;
-		});
+	get isEnd(): boolean {
+		return this._remain === 0;
 	}
 }
 

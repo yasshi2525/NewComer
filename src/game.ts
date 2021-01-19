@@ -98,6 +98,7 @@ function spawn(opts: {
 	customerLayer: g.E;
 	tweetLayer: g.E;
 	customers: { c: Customer; t: Tweeter }[];
+	ticker: Ticker;
 	interval: number;
 }): void {
 	appendCountDown({
@@ -114,7 +115,9 @@ function spawn(opts: {
 			}));
 		},
 		onEnd: () => {
-			spawn(opts);
+			if (!opts.ticker.isEnd) {
+				spawn(opts);
+			}
 		}
 	}, opts.interval, opts.customerLayer);
 }
@@ -263,7 +266,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			castTweeter.normal();
 		});
 
-		new Ticker({
+		const ticker = new Ticker({
 			scene,
 			font: new g.BitmapFont({
 				src: scene.asset.getImageById("score_main"),
@@ -597,6 +600,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			customers,
 			fence,
 			collabos,
+			ticker,
 			interval: 2 * game.fps
 		});
 
