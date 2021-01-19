@@ -129,8 +129,6 @@ function animateFence(opts: {
 	].forEach(pos => {
 		const c = new Customer({
 			asset: opts.scene.asset.getImageById("customer_img"),
-			width: opts.panel.width,
-			height: opts.panel.height,
 			rg: opts.game.random,
 			panel: opts.panel,
 			font,
@@ -138,6 +136,7 @@ function animateFence(opts: {
 			scene: opts.scene,
 			speed: 0,
 			turn: 0.2 * Math.PI / 2,
+			isStay: false,
 			scale: 1,
 			opacity:1,
 			fade: 1 * opts.game.fps,

@@ -43,8 +43,6 @@ function createCustomer(opts: {
 }): { c: Customer; t: Tweeter } {
 	const c = new Customer({
 		asset: opts.scene.asset.getImageById("customer_img"),
-		width: opts.game.width,
-		height: opts.game.height,
 		rg: opts.game.random,
 		panel: opts.customerLayer,
 		font: opts.customerFont,
@@ -52,8 +50,9 @@ function createCustomer(opts: {
 		scene: opts.scene,
 		speed: 3,
 		turn: 0.2 * Math.PI / 2,
+		isStay: opts.game.random.generate() < 0.5,
 		scale: 1,
-		opacity: 0.25,
+		opacity: 1,
 		fade: 1 * opts.game.fps,
 		fence: opts.fence
 	});

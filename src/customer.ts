@@ -3,8 +3,6 @@ import { appendCountDown } from "./utils";
 
 export type CustomerOption = {
 	rg: g.RandomGenerator;
-	width: number;
-	height: number;
 	scene: g.Scene;
 	asset: g.ImageAsset;
 	panel: g.E;
@@ -13,6 +11,7 @@ export type CustomerOption = {
 	scale: number;
 	speed: number;
 	turn: number;
+	isStay: boolean;
 	fade: number;
 	opacity: number;
 	fence: Fence;
@@ -26,28 +25,26 @@ export class Customer {
 	private _fontSize: number;
 	private _sprite: g.Sprite;
 	private _rg: g.RandomGenerator;
-	private _w: number;
-	private _h: number;
 	private _head: number;
 	private _speed: number;
 	private _turn: number;
 	private _boost: number;
 	private _fade: number;
 	private _scale: number;
+	private _isStay: boolean;
 	private _opacity: number;
 	private _fence: Fence;
 	private _killed: boolean;
 
 	constructor(opts: CustomerOption) {
 		this._rg = opts.rg;
-		this._w = opts.width;
-		this._h = opts.height;
 		this._speed = opts.speed;
 		this._turn = opts.turn;
 		this._boost = 1.0;
 		this._fade = opts.fade;
 		this._opacity = opts.opacity;
 		this._scale = opts.scale;
+		this._isStay = opts.isStay;
 		this._fence = opts.fence;
 		this._scene = opts.scene;
 		this._asset = opts.asset;
@@ -57,8 +54,8 @@ export class Customer {
 
 		this._sprite = this.appendSprite(
 			opts.panel,
-			this._rg.generate() * this._w,
-			this._rg.generate() * this._h
+			this._rg.generate() * this._panel.width,
+			this._rg.generate() * this._panel.height
 		);
 
 		this._head = this._rg.generate() * Math.PI * 2;
@@ -95,6 +92,20 @@ export class Customer {
 			);
 		} else {
 			this._head += (this._rg.generate() - 0.5) * this._turn;
+			if (this._isStay) {
+				if (
+					(this._sprite.x <= 0 && Math.cos(this._head) < 0)
+					|| (this._sprite.x >= this._panel.width && Math.cos(this._head) > 0)
+				) {
+					this._head = Math.PI - this._head;
+				}
+				if (
+					(this._sprite.y <= 0 && Math.sin(this._head) < 0)
+					|| (this._sprite.y >= this._panel.height && Math.sin(this._head) > 0)
+				) {
+					this._head = - this._head;
+				}
+			}
 		}
 		this._sprite.x += this._speed * this._boost * Math.cos(this._head);
 		this._sprite.y += this._speed * this._boost * Math.sin(this._head);
