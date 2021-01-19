@@ -160,7 +160,6 @@ export class Collabo {
 						this._isCoolDown = true;
 						this._board.cssColor = opts.disabledColor;
 						this._board.modified();
-						this._onStart(this);
 					},
 					onCount: (cnt) => {
 						coolDownBar.width = this._board.width * cnt / this._coolDown;
@@ -185,14 +184,17 @@ export class Collabo {
 				appendCountDown({
 					onStart: () => {
 						this._isEffect = true;
+						this._onStart(this);
 					},
 					onCount: (cnt) => {
 						effectBar.width = this._board.width / 8 * cnt / this._effect;
 						effectBar.modified();
+						this._onCollabo(this);
 					},
 					onEnd: () => {
 						this._isEffect = false;
 						effectBar.destroy();
+						this._onEnd(this);
 					}
 				}, this._effect, this._board);
 			}

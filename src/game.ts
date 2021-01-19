@@ -370,11 +370,20 @@ export function createGameScene(game: g.Game): g.Scene {
 		});
 
 		const customers: { c: Customer; t: Tweeter }[] = [];
+		const collabos: Collabo[] = [];
 
 		customerLayer.onUpdate.add(() => {
-			customers.forEach(obj => {
-				obj.t.normal();
+			let isCollabo = false;
+			collabos.forEach((co) => {
+				if (co.isEffect) {
+					isCollabo = true;
+				}
 			});
+			if (!isCollabo) {
+				customers.forEach(obj => {
+					obj.t.normal();
+				});
+			}
 		});
 
 		const customerFont = new g.DynamicFont({
@@ -465,8 +474,6 @@ export function createGameScene(game: g.Game): g.Scene {
 			minScore: 30
 		}];
 
-		const collabos: Collabo[] = [];
-
 		collaboInfos.forEach((info, i) => {
 			const container = new g.E({
 				scene,
@@ -519,6 +526,7 @@ export function createGameScene(game: g.Game): g.Scene {
 					});
 				},
 				onCollabo: (co) => {
+					console.log("コラボ中！");
 					customers.forEach(obj => {
 						if (obj.c.isBoost) {
 							obj.t.collabo();
