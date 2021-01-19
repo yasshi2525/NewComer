@@ -193,6 +193,18 @@
 			"width": 412,
 			"height": 45,
 			"path": "image/title_inst3.png"
+		},
+		"inst1": {
+			"type": "image",
+			"width": 525,
+			"height": 30,
+			"path": "image/inst1.png"
+		},
+		"inst2": {
+			"type": "image",
+			"width": 345,
+			"height": 30,
+			"path": "image/inst2.png"
 		}
 	},
 	"moduleMainScripts": {},

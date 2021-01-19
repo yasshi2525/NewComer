@@ -81,6 +81,8 @@ export function createGameScene(game: g.Game): g.Scene {
 	const scene = new g.Scene({
 		game,
 		assetIds: [
+			"inst1",
+			"inst2",
 			"cast_img",
 			"advertise_img",
 			"customer_img",
@@ -104,32 +106,37 @@ export function createGameScene(game: g.Game): g.Scene {
 		const customerLayer = new g.E({
 			scene,
 			parent: container,
+			y: 80,
 			width: container.width - 250,
-			height: container.height
+			height: container.height - 80
 		});
 		const tweetLayer = new g.E({
 			scene,
 			parent: container,
+			y: 80,
 			width: container.width - 250,
-			height: container.height
+			height: container.height - 80
 		});
 		const castLayer = new g.E({
 			scene,
 			parent: container,
+			y: 80,
 			width: container.width - 250,
-			height: container.height
+			height: container.height - 80
 		});
 		const castTweetLayer = new g.E({
 			scene,
 			parent: container,
+			y: 80,
 			width: container.width - 250,
-			height: container.height
+			height: container.height - 80
 		});
 		const fenceLayer = new g.E({
 			scene,
 			parent: container,
+			y: 80,
 			width: container.width - 250,
-			height: container.height
+			height: container.height - 80
 		});
 		const actionLayer = new g.E({
 			scene,
@@ -142,6 +149,21 @@ export function createGameScene(game: g.Game): g.Scene {
 			parent: container,
 			width: container.width,
 			height: container.height
+		});
+
+		new g.Sprite({
+			scene,
+			parent: scoreLayer,
+			src: scene.asset.getImageById("inst1"),
+			x: 15,
+			y: 15
+		});
+		new g.Sprite({
+			scene,
+			parent: scoreLayer,
+			src: scene.asset.getImageById("inst2"),
+			x: 15,
+			y: 45
 		});
 
 		new Cast({
