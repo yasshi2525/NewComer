@@ -149,7 +149,8 @@ function animateFence(opts: {
 			scale: 1,
 			opacity:1,
 			fade: 1 * opts.game.fps,
-			fence: opts.f
+			fence: opts.f,
+			graceful: false
 		});
 		c.position = {
 			x: opts.panel.width * pos.x,

@@ -41,7 +41,8 @@ function createCustomer(opts: {
 	customerLayer: g.E;
 	tweetLayer: g.E;
 	fence: Fence;
-	collabos: {co: Collabo; t: Tweeter}[];
+	collabos: { co: Collabo; t: Tweeter }[];
+	graceful: boolean;
 }): { c: Customer; t: Tweeter } {
 	const c = new Customer({
 		asset: opts.scene.asset.getImageById("customer_img"),
@@ -60,7 +61,8 @@ function createCustomer(opts: {
 		scale: 1,
 		opacity: 1,
 		fade: 1 * opts.game.fps,
-		fence: opts.fence
+		fence: opts.fence,
+		graceful: opts.graceful
 	});
 
 	opts.collabos.forEach((obj) => {
@@ -111,7 +113,8 @@ function spawn(opts: {
 				fence: opts.fence,
 				collabos: opts.collabos,
 				customerLayer: opts.customerLayer,
-				tweetLayer: opts.tweetLayer
+				tweetLayer: opts.tweetLayer,
+				graceful: true
 			}));
 		},
 		onEnd: () => {
@@ -625,7 +628,8 @@ export function createGameScene(game: g.Game): g.Scene {
 						fence,
 						collabos,
 						customerLayer,
-						tweetLayer
+						tweetLayer,
+						graceful: true,
 					}));
 				}
 				castTweeter.advertise();
@@ -643,7 +647,8 @@ export function createGameScene(game: g.Game): g.Scene {
 				fence,
 				collabos,
 				customerLayer,
-				tweetLayer
+				tweetLayer,
+				graceful: false
 			}));
 		}
 

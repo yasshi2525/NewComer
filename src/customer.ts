@@ -19,6 +19,7 @@ export type CustomerOption = {
 	fade: number;
 	opacity: number;
 	fence: Fence;
+	graceful: boolean;
 };
 
 export class Customer {
@@ -70,7 +71,22 @@ export class Customer {
 			this._rg.generate() * this._panel.width,
 			this._rg.generate() * this._panel.height
 		);
-
+		if (opts.graceful) {
+			appendCountDown({
+				onStart: () => {
+					this._sprite.opacity = 0;
+					this._sprite.modified();
+				},
+				onCount: (cnt) => {
+					this._sprite.opacity = 1 - cnt / this._fade;
+					this._sprite.modified();
+				},
+				onEnd: () => {
+					this._sprite.opacity = 1;
+					this._sprite.modified();
+				}
+			}, this._fade, this._panel);
+		}
 		this._head = this._rg.generate() * Math.PI * 2;
 
 		this._sprite.onUpdate.add(() => {
