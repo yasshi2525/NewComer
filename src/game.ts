@@ -44,6 +44,10 @@ function createCustomer(opts: {
 }): { c: Customer; t: Tweeter } {
 	const c = new Customer({
 		asset: opts.scene.asset.getImageById("customer_img"),
+		successAsset: opts.scene.asset.getImageById("customer_success"),
+		failAsset: opts.scene.asset.getImageById("customer_fail"),
+		successTextAsset: opts.scene.asset.getImageById("fence_success"),
+		failTextAsset: opts.scene.asset.getImageById("fence_fail"),
 		rg: opts.game.random,
 		panel: opts.customerLayer,
 		font: opts.customerFont,
@@ -115,6 +119,10 @@ export function createGameScene(game: g.Game): g.Scene {
 			"cast_img",
 			"advertise_img",
 			"customer_img",
+			"customer_success",
+			"customer_fail",
+			"fence_success",
+			"fence_fail",
 			"tweet_img",
 			"score_main",
 			"score_main_glyphs",
@@ -398,10 +406,14 @@ export function createGameScene(game: g.Game): g.Scene {
 						rate = 0.75;
 				}
 				customers.forEach((obj) => {
-					if (game.random.generate() < rate && f.isInner(obj.c.x, obj.c.y)) {
-						obj.c.kill();
-						obj.t.kill();
-						scorer.add(1);
+					if (f.isInner(obj.c.x, obj.c.y)) {
+						if (game.random.generate() < rate) {
+							obj.c.kill();
+							obj.t.kill();
+							scorer.add(1);
+						} else {
+							obj.c.reject();
+						}
 					}
 				});
 				const old = customers;

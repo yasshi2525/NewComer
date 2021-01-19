@@ -196,15 +196,27 @@
 		},
 		"inst1": {
 			"type": "image",
-			"width": 525,
-			"height": 30,
+			"width": 656,
+			"height": 38,
 			"path": "image/inst1.png"
 		},
 		"inst2": {
 			"type": "image",
-			"width": 345,
-			"height": 30,
+			"width": 431,
+			"height": 38,
 			"path": "image/inst2.png"
+		},
+		"fence_fail": {
+			"type": "image",
+			"width": 66,
+			"height": 38,
+			"path": "image/fence_fail.png"
+		},
+		"fence_success": {
+			"type": "image",
+			"width": 66,
+			"height": 38,
+			"path": "image/fence_success.png"
 		}
 	},
 	"moduleMainScripts": {},

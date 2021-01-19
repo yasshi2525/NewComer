@@ -14,7 +14,11 @@ export function createTitleScene(game: g.Game): g.Scene {
 			"title_inst3",
 			"finger",
 			"cast_img",
-			"customer_img"
+			"customer_img",
+			"customer_success",
+			"customer_fail",
+			"fence_success",
+			"fence_fail",
 		]
 	});
 
@@ -129,6 +133,10 @@ function animateFence(opts: {
 	].forEach(pos => {
 		const c = new Customer({
 			asset: opts.scene.asset.getImageById("customer_img"),
+			successAsset: opts.scene.asset.getImageById("customer_success"),
+			failAsset: opts.scene.asset.getImageById("customer_fail"),
+			successTextAsset: opts.scene.asset.getImageById("fence_success"),
+			failTextAsset: opts.scene.asset.getImageById("fence_fail"),
 			rg: opts.game.random,
 			panel: opts.panel,
 			font,

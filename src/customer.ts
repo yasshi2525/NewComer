@@ -5,6 +5,10 @@ export type CustomerOption = {
 	rg: g.RandomGenerator;
 	scene: g.Scene;
 	asset: g.ImageAsset;
+	successAsset: g.ImageAsset;
+	failAsset: g.ImageAsset;
+	successTextAsset: g.ImageAsset;
+	failTextAsset: g.ImageAsset;
 	panel: g.E;
 	font: g.Font;
 	fontSize: number;
@@ -21,6 +25,10 @@ export class Customer {
 	private _scene: g.Scene;
 	private _panel: g.E;
 	private _asset: g.ImageAsset;
+	private _successAsset: g.ImageAsset;
+	private _failAsset: g.ImageAsset;
+	private _successTextAsset: g.ImageAsset;
+	private _failTextAsset: g.ImageAsset;
 	private _font: g.Font;
 	private _fontSize: number;
 	private _sprite: g.Sprite;
@@ -48,12 +56,17 @@ export class Customer {
 		this._fence = opts.fence;
 		this._scene = opts.scene;
 		this._asset = opts.asset;
+		this._successAsset = opts.successAsset;
+		this._failAsset = opts.failAsset;
+		this._successTextAsset = opts.successTextAsset;
+		this._failTextAsset = opts.failTextAsset;
 		this._panel = opts.panel;
 		this._font = opts.font;
 		this._fontSize = opts.fontSize;
 
 		this._sprite = this.appendSprite(
 			opts.panel,
+			opts.asset,
 			this._rg.generate() * this._panel.width,
 			this._rg.generate() * this._panel.height
 		);
@@ -118,6 +131,37 @@ export class Customer {
 		this._sprite.modified();
 	}
 
+	reject(): void {
+		const container = new g.E({
+			scene: this._scene,
+			parent: this._panel,
+			x: this._sprite.x,
+			y: this._sprite.y,
+			width: this._sprite.width * this._sprite.scaleX,
+			height: this._sprite.height * this._sprite.scaleY,
+		});
+		this.appendSprite(container, this._failAsset, 0, 0);
+		const text = new g.Sprite({
+			scene: this._scene,
+			parent: container,
+			src: this._failTextAsset,
+			y: (this._sprite.height * this._sprite.scaleY) / 2
+		});
+		text.x = -text.width / 2;
+		text.modified();
+		appendCountDown({
+			onCount: (cnt: number) => {
+				container.x = this._sprite.x;
+				container.y = this._sprite.y;
+				container.opacity = cnt / this._fade;
+				container.modified();
+			},
+			onEnd: () => {
+				container.destroy();
+			}
+		}, this._fade, this._panel);
+	}
+
 	kill(): void {
 		this._sprite.destroy();
 		this._killed = true;
@@ -129,21 +173,20 @@ export class Customer {
 			width: this._sprite.width * this._sprite.scaleX,
 			height: this._sprite.height * this._sprite.scaleY,
 		});
-		this.appendSprite(container, 0, 0);
-		new g.Label({
+		this.appendSprite(container, this._successAsset, 0, 0);
+		const text = new g.Sprite({
 			scene: this._scene,
 			parent: container,
-			font: this._font,
-			fontSize: this._fontSize,
-			text: "成功！",
-			x: - this._fontSize * 1.5,
-			y: (this._sprite.height * this._sprite.scaleY + this._fontSize) / 2
+			src: this._successTextAsset,
+			y: (this._sprite.height * this._sprite.scaleY) / 2
 		});
+		text.x = -text.width / 2;
+		text.modified();
 		appendCountDown({
 			onCount: (cnt: number) => {
 				container.opacity = cnt / this._fade;
-				container.modified();
 				container.y -= container.height / this._fade;
+				container.modified();
 			},
 			onEnd: () => {
 				container.destroy();
@@ -177,11 +220,11 @@ export class Customer {
 		return this._boost > 1.0;
 	}
 
-	private appendSprite(parent: g.E, x: number, y: number): g.Sprite {
+	private appendSprite(parent: g.E, asset: g.ImageAsset, x: number, y: number): g.Sprite {
 		return new g.Sprite({
 			scene: this._scene,
 			parent,
-			src: this._asset,
+			src: asset,
 			scaleX: this._scale,
 			scaleY: this._scale,
 			anchorX: 0.5,
