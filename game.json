@@ -60,8 +60,8 @@
 		},
 		"score_main": {
 			"type": "image",
-			"width": 688,
-			"height": 31,
+			"width": 756,
+			"height": 47,
 			"path": "image/score_main.png"
 		},
 		"score_main_glyphs": {

@@ -1,7 +1,7 @@
 
 
 function toText(score: number): string {
-	return `SCORE:${("   " + score).slice(-3)}`;
+	return `常連:${("   " + score).slice(-3)}人`;
 }
 
 export type ScorerOption = {

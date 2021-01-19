@@ -50,5 +50,5 @@ export class Ticker {
 }
 
 function toText(frame: number, fps: number): string {
-	return `TIME:${("   "+Math.floor(frame / fps)).slice(-3)}`;
+	return `残り:${("   "+Math.floor(frame / fps)).slice(-3)}秒`;
 }

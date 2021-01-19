@@ -201,7 +201,7 @@ export function createGameScene(game: g.Game): g.Scene {
 				src: scene.asset.getImageById("score_main"),
 				glyphInfo: JSON.parse(scene.asset.getTextById("score_main_glyphs").data)
 			}),
-			x: scoreLayer.width - 240,
+			x: scoreLayer.width - 220,
 			y: 15,
 			panel: scoreLayer,
 			size: 30,
@@ -295,7 +295,7 @@ export function createGameScene(game: g.Game): g.Scene {
 				src: scene.asset.getImageById("score_main"),
 				glyphInfo: JSON.parse(scene.asset.getTextById("score_main_glyphs").data)
 			}),
-			x: scoreLayer.width - 300,
+			x: scoreLayer.width - 220,
 			y: 45,
 			panel: scoreLayer,
 			size: 30,
