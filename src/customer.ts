@@ -85,11 +85,17 @@ export class Customer {
 	}
 
 	step(): void {
+		let speed = this._speed;
 		if (this._boost > 1.0) {
 			this._head = Math.atan2(
 				this._panel.height / 2 - this._sprite.y,
 				this._panel.width / 2 - this._sprite.x,
 			);
+			const dx = this._sprite.x - this._panel.width / 2;
+			const dy = this._sprite.y - this._panel.height / 2;
+			if (Math.sqrt(dx * dx + dy * dy) < this._sprite.width * this._sprite.scaleX) {
+				speed = 0;
+			}
 		} else {
 			this._head += (this._rg.generate() - 0.5) * this._turn;
 			if (this._isStay) {
@@ -107,8 +113,8 @@ export class Customer {
 				}
 			}
 		}
-		this._sprite.x += this._speed * this._boost * Math.cos(this._head);
-		this._sprite.y += this._speed * this._boost * Math.sin(this._head);
+		this._sprite.x += speed * this._boost * Math.cos(this._head);
+		this._sprite.y += speed * this._boost * Math.sin(this._head);
 		this._sprite.modified();
 	}
 
