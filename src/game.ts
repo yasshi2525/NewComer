@@ -360,7 +360,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			size: 30,
 		});
 
-		let customers: { c: Customer; t: Tweeter }[] = [];
+		const customers: { c: Customer; t: Tweeter }[] = [];
 
 		customerLayer.onUpdate.add(() => {
 			customers.forEach(obj => {
@@ -416,8 +416,8 @@ export function createGameScene(game: g.Game): g.Scene {
 						}
 					}
 				});
-				const old = customers;
-				customers = [];
+				const old = [...customers];
+				customers.splice(0);
 				old.forEach((obj) => {
 					if (!obj.c.killed) {
 						customers.push(obj);
