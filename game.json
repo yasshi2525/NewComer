@@ -125,20 +125,20 @@
 		},
 		"collabo_cast_tier1": {
 			"type": "image",
-			"width": 256,
-			"height": 256,
+			"width": 72,
+			"height": 72,
 			"path": "image/collabo_cast_tier1.png"
 		},
 		"collabo_cast_tier2": {
 			"type": "image",
-			"width": 256,
-			"height": 256,
+			"width": 72,
+			"height": 72,
 			"path": "image/collabo_cast_tier2.png"
 		},
 		"collabo_cast_tier3": {
 			"type": "image",
-			"width": 256,
-			"height": 256,
+			"width": 72,
+			"height": 72,
 			"path": "image/collabo_cast_tier3.png"
 		},
 		"collabo_lock": {

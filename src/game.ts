@@ -41,7 +41,7 @@ function createCustomer(opts: {
 	customerLayer: g.E;
 	tweetLayer: g.E;
 	fence: Fence;
-	collabos: Collabo[];
+	collabos: {co: Collabo; t: Tweeter}[];
 }): { c: Customer; t: Tweeter } {
 	const c = new Customer({
 		asset: opts.scene.asset.getImageById("customer_img"),
@@ -63,9 +63,9 @@ function createCustomer(opts: {
 		fence: opts.fence
 	});
 
-	opts.collabos.forEach((co) => {
-		if (co.isEffect && opts.game.random.generate() < co.rate ) {
-			c.attract(co.boost, co.effect);
+	opts.collabos.forEach((obj) => {
+		if (obj.co.isEffect && opts.game.random.generate() < obj.co.rate ) {
+			c.attract(obj.co.boost, obj.co.effect);
 		}
 	});
 
@@ -94,7 +94,7 @@ function spawn(opts: {
 	customerFont: g.Font;
 	tweetFont: g.Font;
 	fence: Fence;
-	collabos: Collabo[];
+	collabos: {co: Collabo; t: Tweeter}[];
 	customerLayer: g.E;
 	tweetLayer: g.E;
 	customers: { c: Customer; t: Tweeter }[];
@@ -205,14 +205,18 @@ export function createGameScene(game: g.Game): g.Scene {
 			parent: scoreLayer,
 			src: scene.asset.getImageById("inst1"),
 			x: 15,
-			y: 15
+			y: 15,
+			scaleX: 0.8,
+			scaleY: 0.8
 		});
 		new g.Sprite({
 			scene,
 			parent: scoreLayer,
 			src: scene.asset.getImageById("inst2"),
 			x: 15,
-			y: 45
+			y: 45,
+			scaleX: 0.8,
+			scaleY: 0.8
 		});
 
 		new Cast({
@@ -377,12 +381,12 @@ export function createGameScene(game: g.Game): g.Scene {
 		});
 
 		const customers: { c: Customer; t: Tweeter }[] = [];
-		const collabos: Collabo[] = [];
+		const collabos: { co: Collabo; t: Tweeter }[] = [];
 
 		customerLayer.onUpdate.add(() => {
 			let isCollabo = false;
-			collabos.forEach((co) => {
-				if (co.isEffect) {
+			collabos.forEach((obj) => {
+				if (obj.co.isEffect) {
 					isCollabo = true;
 				}
 			});
@@ -461,6 +465,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			coolDown: 10 * game.fps,
 			effect: 5 * game.fps,
 			minScore: 1,
+			messages: ["どーもー", "友人です", "一緒にやります", "それな", "そうそう", "それでね"],
 		}, {
 			tier: 2,
 			name: "中堅放送者",
@@ -470,6 +475,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			coolDown: 10 * game.fps,
 			effect: 5 * game.fps,
 			minScore: 10,
+			messages: ["まいど！", "やってくぜ", "おもろ！", "そんでな", "ほうほう"],
 		}, {
 			tier: 3,
 			name: "大物放送者",
@@ -478,7 +484,8 @@ export function createGameScene(game: g.Game): g.Scene {
 			boost: 0.8,
 			coolDown: 20 * game.fps,
 			effect: 5 * game.fps,
-			minScore: 30
+			minScore: 30,
+			messages: ["わしじゃ", "ようこそ", "ほっほっほっ", "よきに"],
 		}];
 
 		collaboInfos.forEach((info, i) => {
@@ -491,58 +498,108 @@ export function createGameScene(game: g.Game): g.Scene {
 				height: 90
 			});
 
-			collabos.push(new Collabo({
+			const collaboTweeter = new Tweeter({
+				asset: scene.asset.getImageById("tweet_img"),
+				effect: 2 * game.fps,
+				delay: 0,
+				coolDown: 2 * game.fps,
+				font: new g.DynamicFont({
+					game,
+					fontFamily: "sans-serif",
+					size: 15
+				}),
 				scene,
-				panel: container,
-				rate: info.rate,
-				boost: info.boost,
-				lockAsset: scene.asset.getImageById("collabo_lock"),
-				lockFont: new g.DynamicFont({
-					game,
-					fontFamily: "sans-serif",
-					fontColor: "#ffffff",
-					size: 15
+				panel: castTweetLayer,
+				position: () => ({
+					x: tweetLayer.width / 2 + 128,
+					y: tweetLayer.height / 2
 				}),
-				lockScale: 0.125,
-				collaboAseet: scene.asset.getImageById(`collabo_cast_tier${info.tier}`),
-				collaboFont:new g.DynamicFont({
-					game,
-					fontFamily: "sans-serif",
-					size: 15
-				}),
-				collaboText: [`${info.name} とコラボ放送`, `効果: ${info.effectText}`],
-				collaboScale: 0.25,
-				fontSize: 15,
-				enabledColor: "#88ff88",
-				disabledColor: "#888888",
-				lockedColor: "#666666",
-				effectColor: "#0000ff",
-				effectHeight: 10,
-				coolDownColor: "#ff0000",
-				coolDownHeight: 5,
-				coolDown: info.coolDown,
-				effect: info.effect,
-				minScore: info.minScore,
-				opacity: 0.25,
-				scorer,
-				onStart: (co) => {
-					customers.forEach(obj => {
-						if (game.random.generate() < co.rate ) {
-							obj.c.attract(co.boost, co.effect);
-						}
-					});
-				},
-				onCollabo: (co) => {
-					console.log("コラボ中！");
-					customers.forEach(obj => {
-						if (obj.c.isBoost) {
-							obj.t.collabo();
-						}
-					});
-					castTweeter.collabo();
-				},
-				onEnd: () => undefined,
-			}));
+				rand: game.random,
+				size: 15,
+				scale: 0.25,
+				events: {
+					start: {
+						messages: [],
+						rate: 1.0
+					},
+					normal: {
+						messages: [],
+						rate: 1.0
+					},
+					advertise: {
+						messages: [],
+						rate: 0.0
+					},
+					collabo: {
+						messages: info.messages,
+						rate: 1.0
+					},
+					end: {
+						messages: [],
+						rate: 1.0
+					}
+				}
+			});
+
+			collabos.push({
+				co: new Collabo({
+					scene,
+					panel: container,
+					rate: info.rate,
+					boost: info.boost,
+					lockAsset: scene.asset.getImageById("collabo_lock"),
+					lockFont: new g.DynamicFont({
+						game,
+						fontFamily: "sans-serif",
+						fontColor: "#ffffff",
+						size: 15
+					}),
+					lockScale: 0.125,
+					collaboAsset: scene.asset.getImageById(`collabo_cast_tier${info.tier}`),
+					collaboFont: new g.DynamicFont({
+						game,
+						fontFamily: "sans-serif",
+						size: 15
+					}),
+					collaboText: [`${info.name} とコラボ放送`, `効果: ${info.effectText}`],
+					collaboScale: 1.0,
+					fontSize: 15,
+					enabledColor: "#88ff88",
+					disabledColor: "#888888",
+					lockedColor: "#666666",
+					effectColor: "#0000ff",
+					effectHeight: 10,
+					coolDownColor: "#ff0000",
+					coolDownHeight: 5,
+					coolDown: info.coolDown,
+					effect: info.effect,
+					minScore: info.minScore,
+					opacity: 0.25,
+					scorer,
+					castAsset: scene.asset.getImageById(`collabo_cast_tier${info.tier}`),
+					castLayer,
+					onStart: (co) => {
+						collaboTweeter.show();
+						customers.forEach(obj => {
+							if (game.random.generate() < co.rate) {
+								obj.c.attract(co.boost, co.effect);
+							}
+						});
+					},
+					onCollabo: (co) => {
+						customers.forEach(obj => {
+							if (obj.c.isBoost) {
+								obj.t.collabo();
+							}
+						});
+						collaboTweeter.collabo();
+						castTweeter.collabo();
+					},
+					onEnd: () => {
+						collaboTweeter.hide();
+					},
+				}), t: collaboTweeter
+			});
 		});
 
 		new Advertise({
@@ -577,7 +634,7 @@ export function createGameScene(game: g.Game): g.Scene {
 				});
 			}
 		});
-		for (let i = 0; i < 20; i++) {
+		for (let i = 0; i < 10; i++) {
 			customers.push(createCustomer({
 				game,
 				scene,

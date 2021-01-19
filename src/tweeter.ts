@@ -113,6 +113,14 @@ export class Tweeter {
 		}
 	}
 
+	show(): void {
+		this._container.show();
+	}
+
+	hide(): void {
+		this._container.hide();
+	}
+
 	kill(): void {
 		this._label.destroy();
 		this._sprite.destroy();

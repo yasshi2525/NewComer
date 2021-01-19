@@ -7,7 +7,7 @@ export type CollaboOption = {
 	lockAsset: g.ImageAsset;
 	lockScale: number;
 	lockFont: g.Font;
-	collaboAseet: g.ImageAsset;
+	collaboAsset: g.ImageAsset;
 	collaboScale: number;
 	collaboFont: g.Font;
 	collaboText: [string, string];
@@ -26,6 +26,8 @@ export type CollaboOption = {
 	minScore: number;
 	coolDown: number;
 	scorer: Scorer;
+	castAsset: g.ImageAsset;
+	castLayer: g.E;
 	onStart: (c: Collabo) => void;
 	onCollabo: (c: Collabo) => void;
 	onEnd: (c: Collabo) => void;
@@ -103,11 +105,11 @@ export class Collabo {
 		const collaboSprite = new g.Sprite({
 			scene: opts.scene,
 			parent: this._board,
-			src: opts.collaboAseet,
+			src: opts.collaboAsset,
 			scaleX: opts.collaboScale,
 			scaleY: opts.collaboScale,
 			x: this._board.width / 32,
-			y: (this._board.height - opts.lockAsset.height * opts.collaboScale) / 2
+			y: (this._board.height - opts.collaboAsset.height * opts.collaboScale) / 2
 		});
 		collaboSprite.hide();
 		const collaboLabel1 = new g.Label({
@@ -130,6 +132,15 @@ export class Collabo {
 			y: this._board.height / 2 + opts.fontSize
 		});
 		collaboLabel2.hide();
+
+		const spriteOnCast = new g.Sprite({
+			scene: opts.scene,
+			parent: opts.castLayer,
+			src: opts.castAsset,
+		});
+		spriteOnCast.x = (opts.castLayer.width) / 2 + spriteOnCast.width;
+		spriteOnCast.y = (opts.castLayer.height - spriteOnCast.height) / 2;
+		spriteOnCast.hide();
 
 		// 得点追加による開放
 		opts.scorer.observe((s) => {
@@ -184,6 +195,7 @@ export class Collabo {
 				appendCountDown({
 					onStart: () => {
 						this._isEffect = true;
+						spriteOnCast.show();
 						this._onStart(this);
 					},
 					onCount: (cnt) => {
@@ -193,6 +205,7 @@ export class Collabo {
 					},
 					onEnd: () => {
 						this._isEffect = false;
+						spriteOnCast.hide();
 						effectBar.destroy();
 						this._onEnd(this);
 					}
