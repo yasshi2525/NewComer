@@ -29,7 +29,7 @@ const tweetEvent = {
 	},
 	end: {
 		messages: ["乙", "お疲れ", "またね", "バイバイ", "楽しかった"],
-		rate: 0.2
+		rate: 0.5
 	}
 };
 
@@ -276,7 +276,11 @@ export function createGameScene(game: g.Game): g.Scene {
 			fps: game.fps,
 			time: 90,
 			onEnd: () => {
-				if (typeof window !== "undefined") {
+				customers.forEach(obj => {
+					obj.t.end();
+				});
+				castTweeter.end();
+				if (typeof window !== "undefined" && window.RPGAtsumaru !== undefined) {
 					const replay = new g.FilledRect({
 						scene,
 						parent: scoreLayer,

@@ -107,6 +107,12 @@ export class Tweeter {
 		}
 	}
 
+	end(): void {
+		if (this._rand.generate() < this._event.end.rate) {
+			this.tweet(this._event.end.messages);
+		}
+	}
+
 	kill(): void {
 		this._label.destroy();
 		this._sprite.destroy();
