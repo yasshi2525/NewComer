@@ -6,6 +6,7 @@ import { Fence } from "./fence";
 import { Scorer } from "./scorer";
 import { Ticker } from "./ticker";
 import { Tweeter } from "./tweeter";
+import { appendCountDown } from "./utils";
 
 declare const window: { RPGAtsumaru: any };
 
@@ -74,6 +75,35 @@ function createCustomer(opts: {
 
 	t.start();
 	return {c, t};
+}
+
+function spawn(opts: {
+	game: g.Game;
+	scene: g.Scene;
+	customerFont: g.Font;
+	tweetFont: g.Font;
+	fence: Fence;
+	customerLayer: g.E;
+	tweetLayer: g.E;
+	customers: { c: Customer; t: Tweeter }[];
+	interval: number;
+}): void {
+	appendCountDown({
+		onStart: () => {
+			opts.customers.push(createCustomer({
+				game: opts.game,
+				scene: opts.scene,
+				customerFont: opts.customerFont,
+				tweetFont: opts.tweetFont,
+				fence: opts.fence,
+				customerLayer: opts.customerLayer,
+				tweetLayer: opts.tweetLayer
+			}));
+		},
+		onEnd: () => {
+			spawn(opts);
+		}
+	}, opts.interval, opts.customerLayer);
 }
 
 export function createGameScene(game: g.Game): g.Scene {
@@ -227,7 +257,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			panel: scoreLayer,
 			size: 30,
 			fps: game.fps,
-			time: 120,
+			time: 90,
 			onEnd: () => {
 				if (typeof window !== "undefined") {
 					const replay = new g.FilledRect({
@@ -520,6 +550,19 @@ export function createGameScene(game: g.Game): g.Scene {
 				tweetLayer
 			}));
 		}
+
+		spawn({
+			game,
+			scene,
+			customerLayer,
+			customerFont,
+			tweetLayer,
+			tweetFont,
+			customers,
+			fence,
+			interval: 2 * game.fps
+		});
+
 		castTweeter.start();
 
 		// scene.onUpdate.add(() => {
