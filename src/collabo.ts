@@ -210,4 +210,8 @@ export class Collabo {
 	get effect(): number {
 		return this._effect;
 	}
+
+	get isEffect(): boolean {
+		return this._isEffect;
+	}
 }

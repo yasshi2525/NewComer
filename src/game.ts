@@ -41,6 +41,7 @@ function createCustomer(opts: {
 	customerLayer: g.E;
 	tweetLayer: g.E;
 	fence: Fence;
+	collabos: Collabo[];
 }): { c: Customer; t: Tweeter } {
 	const c = new Customer({
 		asset: opts.scene.asset.getImageById("customer_img"),
@@ -60,6 +61,12 @@ function createCustomer(opts: {
 		opacity: 1,
 		fade: 1 * opts.game.fps,
 		fence: opts.fence
+	});
+
+	opts.collabos.forEach((co) => {
+		if (co.isEffect && opts.game.random.generate() < co.rate ) {
+			c.attract(co.boost, co.effect);
+		}
 	});
 
 	const t = new Tweeter({
@@ -87,6 +94,7 @@ function spawn(opts: {
 	customerFont: g.Font;
 	tweetFont: g.Font;
 	fence: Fence;
+	collabos: Collabo[];
 	customerLayer: g.E;
 	tweetLayer: g.E;
 	customers: { c: Customer; t: Tweeter }[];
@@ -100,6 +108,7 @@ function spawn(opts: {
 				customerFont: opts.customerFont,
 				tweetFont: opts.tweetFont,
 				fence: opts.fence,
+				collabos: opts.collabos,
 				customerLayer: opts.customerLayer,
 				tweetLayer: opts.tweetLayer
 			}));
@@ -427,39 +436,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			}
 		});
 
-		new Advertise({
-			scene,
-			panel: new g.E({
-				scene,
-				parent: actionLayer,
-				x: actionLayer.width - 250,
-				y: 80,
-			}),
-			asset: scene.asset.getImageById("advertise_img"),
-			barColor: "#ff0000",
-			barHeight: 5,
-			coolDown: 10 * game.fps,
-			opacity: 0.25,
-			onAdvertise: () => {
-				for (let i = 0; i < 10; i++) {
-					customers.push(createCustomer({
-						game,
-						scene,
-						customerFont,
-						tweetFont,
-						fence,
-						customerLayer,
-						tweetLayer
-					}));
-				}
-				castTweeter.advertise();
-				customers.forEach((obj) => {
-					obj.t.advertise();
-				});
-			}
-		});
-
-		const collabos = [{
+		const collaboInfos = [{
 			tier: 1,
 			name: "友人",
 			effectText: "薄口",
@@ -488,7 +465,9 @@ export function createGameScene(game: g.Game): g.Scene {
 			minScore: 30
 		}];
 
-		collabos.forEach((info, i) => {
+		const collabos: Collabo[] = [];
+
+		collaboInfos.forEach((info, i) => {
 			const container = new g.E({
 				scene,
 				parent: actionLayer,
@@ -498,7 +477,7 @@ export function createGameScene(game: g.Game): g.Scene {
 				height: 90
 			});
 
-			new Collabo({
+			collabos.push(new Collabo({
 				scene,
 				panel: container,
 				rate: info.rate,
@@ -548,9 +527,41 @@ export function createGameScene(game: g.Game): g.Scene {
 					castTweeter.collabo();
 				},
 				onEnd: () => undefined,
-			});
+			}));
 		});
 
+		new Advertise({
+			scene,
+			panel: new g.E({
+				scene,
+				parent: actionLayer,
+				x: actionLayer.width - 250,
+				y: 80,
+			}),
+			asset: scene.asset.getImageById("advertise_img"),
+			barColor: "#ff0000",
+			barHeight: 5,
+			coolDown: 10 * game.fps,
+			opacity: 0.25,
+			onAdvertise: () => {
+				for (let i = 0; i < 10; i++) {
+					customers.push(createCustomer({
+						game,
+						scene,
+						customerFont,
+						tweetFont,
+						fence,
+						collabos,
+						customerLayer,
+						tweetLayer
+					}));
+				}
+				castTweeter.advertise();
+				customers.forEach((obj) => {
+					obj.t.advertise();
+				});
+			}
+		});
 		for (let i = 0; i < 20; i++) {
 			customers.push(createCustomer({
 				game,
@@ -558,6 +569,7 @@ export function createGameScene(game: g.Game): g.Scene {
 				customerFont,
 				tweetFont,
 				fence,
+				collabos,
 				customerLayer,
 				tweetLayer
 			}));
@@ -572,6 +584,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			tweetFont,
 			customers,
 			fence,
+			collabos,
 			interval: 2 * game.fps
 		});
 
