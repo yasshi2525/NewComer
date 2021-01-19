@@ -23,7 +23,9 @@ export class Fence {
 	private _enclosure: boolean;
 	private _scene: g.Scene;
 	private _panel: g.E;
-	private _container: g.E;
+	private _backPanel: g.E;
+	private _frontPanel: g.E;
+	private _sensor: g.E;
 	private _font: g.Font;
 	private _fontSize: number;
 	private _line: number;
@@ -44,21 +46,36 @@ export class Fence {
 		this._rough_counter = 0;
 		this._fade = opts.fade;
 		this._isPrintEffect = opts.isPrintEffect;
-		this._container = new g.E({
+
+		this._backPanel = new g.E({
+			scene: opts.scene,
+			parent: opts.panel,
+			width: opts.panel.width,
+			height: opts.panel.height,
+		});
+		this._frontPanel = new g.E({
+			scene: opts.scene,
+			parent: opts.panel,
+			width: opts.panel.width,
+			height: opts.panel.height,
+		});
+
+		this._sensor = new g.E({
 			scene: opts.scene,
 			parent: opts.panel,
 			width: opts.panel.width,
 			height: opts.panel.height,
 			touchable: true,
 		});
+
 		this._nodes = [];
-		this._container.onPointDown.add((arg) => {
+		this._sensor.onPointDown.add((arg) => {
 			if (!this._enclosure && this._nodes.length === 0) {
 				this._pointerID = arg.pointerId;
 				this.start(arg.point.x, arg.point.y);
 			}
 		});
-		this._container.onPointMove.add((arg) => {
+		this._sensor.onPointMove.add((arg) => {
 			if (!this._enclosure && this._pointerID === arg.pointerId) {
 				this._rough_counter++;
 				if (this._rough_counter >= this._rough) {
@@ -67,7 +84,7 @@ export class Fence {
 				}
 			}
 		});
-		this._container.onPointUp.add((arg) => {
+		this._sensor.onPointUp.add((arg) => {
 			if (!this._enclosure && this._pointerID === arg.pointerId) {
 				this.end();
 			}
@@ -125,7 +142,11 @@ export class Fence {
 	}
 
 	clear(): void {
-		const old = this._container.children;
+		let old = this._backPanel.children;
+		if (old) {
+			[...old].forEach(c => c.destroy());
+		}
+		old = this._frontPanel.children;
 		if (old) {
 			[...old].forEach(c => c.destroy());
 		}
@@ -134,7 +155,7 @@ export class Fence {
 	}
 
 	get tier(): number {
-		const base = this._container.width + this._container.height;
+		const base = this._sensor.width + this._sensor.height;
 		const len = this.length;
 		return Math.floor(base/len);
 	}
@@ -174,18 +195,18 @@ export class Fence {
 		return { cross: false, index: -1 };
 	}
 
-	private appendRect(from: Point, to: Point, parent: g.E): g.FilledRect {
-		const dx = to.x - from.x;
-		const dy = to.y - from.y;
+	private appendRect(opts: {from: Point; to: Point; size: number; color: string; parent: g.E}): g.FilledRect {
+		const dx = opts.to.x - opts.from.x;
+		const dy = opts.to.y - opts.from.y;
 		const angle = Math.atan2(dy, dx) / Math.PI * 180;
 		return new g.FilledRect({
 			scene: this._scene,
-			parent,
-			cssColor: "#000000",
+			parent: opts.parent,
+			cssColor: opts.color,
 			width: Math.sqrt(dx * dx + dy * dy),
-			height: this._line,
-			x: (from.x + to.x) / 2,
-			y: (from.y + to.y) / 2,
+			height: opts.size,
+			x: (opts.from.x + opts.to.x) / 2,
+			y: (opts.from.y + opts.to.y) / 2,
 			anchorX: 0.5,
 			anchorY: 0.5,
 			angle,
@@ -194,7 +215,20 @@ export class Fence {
 
 	private pushNode(pos: Point): void {
 		if (this._nodes.length > 0) {
-			this.appendRect(this._nodes[this._nodes.length - 1], pos, this._container);
+			this.appendRect({
+				from: this._nodes[this._nodes.length - 1],
+				to: pos,
+				size: this._line * 2,
+				color: "#ffffff",
+				parent: this._backPanel
+			});
+			this.appendRect({
+				from: this._nodes[this._nodes.length - 1],
+				to: pos,
+				size: this._line,
+				color: "#000000",
+				parent: this._frontPanel
+			});
 		}
 		this._nodes.push(pos);
 	}
@@ -217,28 +251,54 @@ export class Fence {
 			height: this._panel.height,
 		});
 
+		const back = new g.E({
+			scene: this._scene,
+			parent: effect,
+			width: effect.width,
+			height: effect.height,
+		});
+		const front = new g.E({
+			scene: this._scene,
+			parent: effect,
+			width: effect.width,
+			height: effect.height,
+		});
+
 		appendCountDown({
 			onStart: () => {
 				for (let i = 0; i < this._nodes.length - 1; i++) {
-					this.appendRect(this._nodes[i], this._nodes[i + 1], effect);
+					this.appendRect({
+						from: this._nodes[i],
+						to: this._nodes[i + 1],
+						size: this._line * 2,
+						color: "#ffffff",
+						parent: back
+					});
+					this.appendRect({
+						from: this._nodes[i],
+						to: this._nodes[i + 1],
+						size: this._line,
+						color: "#000000",
+						parent: front
+					});
 				}
 				if (this._isPrintEffect) {
 					new g.Label({
 						scene: this._scene,
-						parent: effect,
+						parent: front,
 						font: this._font,
 						fontSize: this._fontSize,
-						x: effect.width / 2.5,
-						y: effect.height * 2 / 3,
+						x: front.width / 2.5,
+						y: front.height * 2 / 3,
 						text: `範囲: ${this.area}`
 					});
 					new g.Label({
 						scene: this._scene,
-						parent: effect,
+						parent: front,
 						font: this._font,
 						fontSize: this._fontSize,
-						x: effect.width / 2.5,
-						y: effect.height * 2 / 3 + this._fontSize * 1.5,
+						x: front.width / 2.5,
+						y: front.height * 2 / 3 + this._fontSize * 1.5,
 						text: `効果: ${this.effect}`
 					});
 				}

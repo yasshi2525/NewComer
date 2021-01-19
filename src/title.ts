@@ -87,7 +87,7 @@ export function createTitleScene(game: g.Game): g.Scene {
 		const cs: Customer[] = [];
 		const f = new Fence({
 			scene,
-			line: 5,
+			line: 3,
 			rough: 1,
 			panel: backgroundLayer,
 			font: new g.DynamicFont({
