@@ -277,6 +277,24 @@
 			"width": 231,
 			"height": 75,
 			"path": "image/effect_tier3.png"
+		},
+		"ending": {
+			"type": "image",
+			"width": 131,
+			"height": 75,
+			"path": "image/ending.png"
+		},
+		"ranking": {
+			"type": "image",
+			"width": 200,
+			"height": 100,
+			"path": "image/ranking.png"
+		},
+		"retry": {
+			"type": "image",
+			"width": 200,
+			"height": 100,
+			"path": "image/retry.png"
 		}
 	},
 	"moduleMainScripts": {},

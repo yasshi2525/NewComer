@@ -154,6 +154,9 @@ export function createGameScene(game: g.Game): g.Scene {
 			"collabo_tier1_disabled",
 			"collabo_tier2_disabled",
 			"collabo_tier3_disabled",
+			"ending",
+			"retry",
+			"ranking"
 		]
 	});
 
@@ -167,37 +170,32 @@ export function createGameScene(game: g.Game): g.Scene {
 		const customerLayer = new g.E({
 			scene,
 			parent: container,
-			y: 80,
 			width: container.width - 250,
-			height: container.height - 80
+			height: container.height
 		});
 		const tweetLayer = new g.E({
 			scene,
 			parent: container,
-			y: 80,
 			width: container.width - 250,
-			height: container.height - 80
+			height: container.height
 		});
 		const castLayer = new g.E({
 			scene,
 			parent: container,
-			y: 80,
 			width: container.width - 250,
-			height: container.height - 80
+			height: container.height
 		});
 		const castTweetLayer = new g.E({
 			scene,
 			parent: container,
-			y: 80,
 			width: container.width - 250,
-			height: container.height - 80
+			height: container.height
 		});
 		const fenceLayer = new g.E({
 			scene,
 			parent: container,
-			y: 80,
 			width: container.width - 250,
-			height: container.height - 80
+			height: container.height
 		});
 		const actionLayer = new g.E({
 			scene,
@@ -295,31 +293,29 @@ export function createGameScene(game: g.Game): g.Scene {
 					obj.t.end();
 				});
 				castTweeter.end();
+				collabos.forEach(obj => {
+					obj.t.end();
+				});
+
+				const ending = new g.Sprite({
+					scene,
+					parent: scoreLayer,
+					src: scene.asset.getImageById("ending")
+				});
+				ending.x = (scoreLayer.width - 250 - ending.width) / 2;
+				ending.y = scoreLayer.height / 3 - 30 - ending.height / 2;
+				ending.modified();
+
 				if (typeof window !== "undefined" && window.RPGAtsumaru !== undefined) {
-					const replay = new g.FilledRect({
+					const replay = new g.Sprite({
 						scene,
 						parent: scoreLayer,
-						cssColor: "#aa88ff",
-						x: scoreLayer.width - 250,
-						y: scoreLayer.height - 100,
-						height: 50,
-						width: 200,
+						src: scene.asset.getImageById("retry"),
 						touchable: true,
 					});
-
-					new g.Label({
-						scene,
-						parent: replay,
-						text: "もう1回あそぶ",
-						font: new g.DynamicFont({
-							game,
-							fontFamily: "sans-serif",
-							size: 25
-						}),
-						fontSize: 25,
-						x: 20,
-						y: 20
-					});
+					replay.x = (scoreLayer.width - 250  - replay.width) / 2;
+					replay.y = scoreLayer.height * 2 / 3 - replay.height / 2;
+					replay.modified();
 
 					replay.onPointUp.add(() => {
 						game.pushScene(createGameScene(game));
@@ -328,49 +324,37 @@ export function createGameScene(game: g.Game): g.Scene {
 					window.RPGAtsumaru.scoreboards
 						.setRecord(1, scorer.value)
 						.then(() => {
-							const ranking = new g.FilledRect({
-								scene,
-								parent: scoreLayer,
-								cssColor: "#aa88ff",
-								x: scoreLayer.width - 250,
-								y: scoreLayer.height - 160,
-								height: 50,
-								width: 200,
-								touchable: true,
-							});
-
 							window.RPGAtsumaru.scoreboards.getRecords(1).then((res: any) => {
-								new g.Label({
+								const ranking = new g.Sprite({
 									scene,
-									parent: ranking,
-									text: `Rank ${res.myRecord.rank}!`,
-									font: new g.DynamicFont({
-										game,
-										fontFamily: "sans-serif",
-										size: 15
-									}),
-									fontSize: 15,
-									x: 10,
-									y: 10
+									parent: scoreLayer,
+									src: scene.asset.getImageById("ranking"),
+									touchable: true,
 								});
+								ranking.x = (scoreLayer.width - 250  - ranking.width) / 2;
+								ranking.y = replay.y + replay.height + 20;
+								ranking.modified();
+								res.myRecord.rank = 10000;
+								const txt = (res.myRecord.rank < 10000) ? `    ${res.myRecord.rank}`.slice(-4) : `${res.myRecord.rank}`;
 								new g.Label({
 									scene,
 									parent: ranking,
-									text: "ランキング",
+									text: txt,
 									font: new g.DynamicFont({
 										game,
 										fontFamily: "sans-serif",
-										size: 25
+										fontColor: "#ffffff",
+										size: 20
 									}),
-									fontSize: 25,
-									x: 10,
-									y: 25
+									fontSize: 20,
+									x: 62,
+									y: 58
+								});
+								ranking.onPointUp.add(() => {
+									window.RPGAtsumaru.scoreboards.display(1);
 								});
 							});
 
-							ranking.onPointUp.add(() => {
-								window.RPGAtsumaru.scoreboards.display(1);
-							});
 						});
 				}
 			}
