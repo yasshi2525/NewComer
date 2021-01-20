@@ -468,7 +468,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			effectText: "薄口",
 			rate: 0.1,
 			boost: 0.2,
-			coolDown: 10 * game.fps,
+			coolDown: 5 * game.fps,
 			effect: 5 * game.fps,
 			minScore: 1,
 			messages: ["どーもー", "友人です", "一緒にやります", "それな", "そうそう", "それでね"],
@@ -508,7 +508,7 @@ export function createGameScene(game: g.Game): g.Scene {
 				asset: scene.asset.getImageById("tweet_img"),
 				effect: 2 * game.fps,
 				delay: 0,
-				coolDown: 2 * game.fps,
+				coolDown: 1 * game.fps,
 				font: new g.DynamicFont({
 					game,
 					fontFamily: "sans-serif",
@@ -576,9 +576,8 @@ export function createGameScene(game: g.Game): g.Scene {
 					lockedColor: "#666666",
 					effectColor: "#0000ff",
 					effectHeight: 10,
-					coolDownColor: "#ff0000",
+					coolDownColor: "#8b0000",
 					coolDownHeight: 5,
-					coolDown: info.coolDown,
 					effect: info.effect,
 					minScore: info.minScore,
 					opacity: 0.25,
@@ -592,6 +591,27 @@ export function createGameScene(game: g.Game): g.Scene {
 								obj.c.attract(co.boost, co.effect);
 							}
 						});
+						appendCountDown({
+							onStart: () => {
+								collabos.forEach(obj => {
+									obj.co.enabled = false;
+									obj.co.coolDown = info.coolDown;
+									obj.co.coolDownCount = info.coolDown;
+								});
+							},
+							onCount: (cnt) => {
+								collabos.forEach(obj => {
+									obj.co.coolDownCount = cnt;
+								});
+							},
+							onEnd: () => {
+								collabos.forEach(obj => {
+									obj.co.enabled = true;
+									obj.co.coolDownCount = 0;
+								});
+							}
+						}, info.coolDown, container);
+
 					},
 					onCollabo: (co) => {
 						customers.forEach(obj => {
@@ -619,7 +639,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			}),
 			enabledAsset: scene.asset.getImageById("advertise_enabled"),
 			disabledAsset: scene.asset.getImageById("advertise_disabled"),
-			barColor: "#ff0000",
+			barColor: "#8b0000",
 			barHeight: 5,
 			coolDown: 10 * game.fps,
 			opacity: 1,

@@ -25,7 +25,6 @@ export type CollaboOption = {
 	boost: number;
 	effect: number;
 	minScore: number;
-	coolDown: number;
 	scorer: Scorer;
 	castAsset: g.ImageAsset;
 	castLayer: g.E;
@@ -37,9 +36,15 @@ export type CollaboOption = {
 export class Collabo {
 	private _scene: g.Scene;
 	private _panel: g.E;
+	private _locked: boolean;
 	private _lockSprite: g.Sprite;
 	private _lockLabel: g.Label;
+	private _enabled: boolean;
+	private _enabledSprite: g.Sprite;
+	private _disabledSprite: g.Sprite;
 	private _opacity: number;
+	private _coolDownCount: number;
+	private _coolDownBar: g.FilledRect;
 	private _coolDownHeight: number;
 	private _coolDownColor: string;
 	private _rate: number;
@@ -59,8 +64,9 @@ export class Collabo {
 		this._boost = opts.boost;
 		this._effect = opts.effect;
 		this._isEffect = false;
+		this._locked = true;
+		this._enabled = true;
 		this._minScore = opts.minScore;
-		this._coolDown = opts.coolDown;
 		this._isCoolDown = false;
 		this._scorer = opts.scorer;
 		this._onStart = opts.onStart;
@@ -70,6 +76,7 @@ export class Collabo {
 		this._scene = opts.scene;
 		this._panel = opts.panel;
 		this._opacity = opts.opacity;
+		this._coolDownCount = 0;
 		this._coolDownHeight = opts.coolDownHeight;
 		this._coolDownColor = opts.coolDownColor;
 
@@ -102,7 +109,7 @@ export class Collabo {
 		this._lockLabel.y = (lockBoard.height - opts.lockAsset.height * opts.lockScale) / 2 + opts.fontSize * 2;
 		this._lockSprite.modified();
 
-		const enabledSprite = new g.Sprite({
+		this._enabledSprite = new g.Sprite({
 			scene: opts.scene,
 			parent: this._panel,
 			src: opts.enabledAsset,
@@ -110,16 +117,16 @@ export class Collabo {
 			scaleY: opts.collaboScale,
 			touchable: true,
 		});
-		enabledSprite.hide();
+		this._enabledSprite.hide();
 
-		const disabledSprite = new g.Sprite({
+		this._disabledSprite = new g.Sprite({
 			scene: opts.scene,
 			parent: this._panel,
 			src: opts.disabledAsset,
 			scaleX: opts.collaboScale,
 			scaleY: opts.collaboScale,
 		});
-		disabledSprite.hide();
+		this._disabledSprite.hide();
 
 		const spriteOnCast = new g.Sprite({
 			scene: opts.scene,
@@ -130,45 +137,36 @@ export class Collabo {
 		spriteOnCast.y = (opts.castLayer.height - spriteOnCast.height) / 2;
 		spriteOnCast.hide();
 
+		this._coolDownBar = new g.FilledRect({
+			scene: this._scene,
+			parent: this._panel,
+			width: this._enabledSprite.width,
+			height: this._coolDownHeight,
+			y: this._enabledSprite.height - this._coolDownHeight,
+			cssColor: this._coolDownColor
+		});
+		this._coolDownBar.hide();
+
 		// 得点追加による開放
 		opts.scorer.observe((s) => {
 			if (this._lockSprite.visible() && s.value >= this._minScore) {
+				this._locked = false;
 				this._lockSprite.hide();
 				this._lockLabel.hide();
 				lockBoard.hide();
-				enabledSprite.show();
+				if (this._enabled) {
+					this._enabledSprite.show();
+				} else {
+					this._disabledSprite.show();
+				}
+				if (this._coolDownCount > 0) {
+					this._coolDownBar.show();
+				}
 			}
 		});
 
-		enabledSprite.onPointUp.add(() => {
+		this._enabledSprite.onPointUp.add(() => {
 			if (this._scorer.value >= this._minScore && !this._isCoolDown) {
-
-				const coolDownBar = new g.FilledRect({
-					scene: this._scene,
-					parent: this._panel,
-					width: enabledSprite.width,
-					height: this._coolDownHeight,
-					y: enabledSprite.height - this._coolDownHeight,
-					cssColor: this._coolDownColor
-				});
-
-				appendCountDown({
-					onStart: () => {
-						this._isCoolDown = true;
-						enabledSprite.hide();
-						disabledSprite.show();
-					},
-					onCount: (cnt) => {
-						coolDownBar.width = enabledSprite.width * cnt / this._coolDown;
-						coolDownBar.modified();
-					},
-					onEnd: () => {
-						this._isCoolDown = false;
-						coolDownBar.destroy();
-						enabledSprite.show();
-						disabledSprite.hide();
-					}
-				}, this._coolDown, this._panel);
 
 				const effectBar = new g.FilledRect({
 					scene: this._scene,
@@ -214,5 +212,35 @@ export class Collabo {
 
 	get isEffect(): boolean {
 		return this._isEffect;
+	}
+
+	set enabled(val: boolean) {
+		this._enabled = val;
+		if (!this._locked) {
+			if (val) {
+				this._enabledSprite.show();
+				this._disabledSprite.hide();
+			} else {
+				this._enabledSprite.hide();
+				this._disabledSprite.show();
+			}
+		}
+	}
+
+	set coolDown(val: number) {
+		this._coolDown = val;
+	}
+
+	set coolDownCount(val: number) {
+		this._isCoolDown = val > 0;
+		if (!this._locked && !this._coolDownBar.visible() && val > 0) {
+			this._coolDownBar.show();
+		}
+		if (this._coolDownBar.visible() && val === 0) {
+			this._coolDownBar.hide();
+		}
+		this._coolDownCount = val;
+		this._coolDownBar.width = this._enabledSprite.width * val / this._coolDown;
+		this._coolDownBar.modified();
 	}
 }
