@@ -10,7 +10,7 @@
     "debug": "akashic-sandbox .",
     "start": "akashic serve -s atsumaru .",
     "export-zip": "rimraf game.zip && akashic export zip -o game.zip -s",
-    "export-html": "rimraf game && akashic export html --magnify --output game --inject ./inject.html",
+    "export-html": "rimraf game && akashic export html --magnify --output game",
     "test": "jest"
   },
   "author": "",
