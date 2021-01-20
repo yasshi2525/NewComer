@@ -4,24 +4,6 @@
 	"fps": 30,
 	"main": "./script/main.js",
 	"assets": {
-		"player": {
-			"type": "image",
-			"width": 32,
-			"height": 32,
-			"path": "image/player.png"
-		},
-		"shot": {
-			"type": "image",
-			"width": 16,
-			"height": 16,
-			"path": "image/shot.png"
-		},
-		"se": {
-			"type": "audio",
-			"path": "audio/se",
-			"systemId": "sound",
-			"duration": 250
-		},
 		"customer_img": {
 			"type": "image",
 			"width": 72,
@@ -100,12 +82,6 @@
 			"path": "script/cast.js",
 			"global": true
 		},
-		"advertise_img": {
-			"type": "image",
-			"width": 250,
-			"height": 63,
-			"path": "image/advertise_img.png"
-		},
 		"advertise": {
 			"type": "script",
 			"path": "script/advertise.js",
@@ -116,12 +92,6 @@
 			"width": 256,
 			"height": 256,
 			"path": "image/advertise_icon.png"
-		},
-		"attracted": {
-			"type": "image",
-			"width": 256,
-			"height": 256,
-			"path": "image/attracted.png"
 		},
 		"collabo_cast_tier1": {
 			"type": "image",
@@ -295,6 +265,89 @@
 			"width": 200,
 			"height": 100,
 			"path": "image/retry.png"
+		},
+		"festival1": {
+			"type": "image",
+			"width": 604,
+			"height": 53,
+			"path": "image/festival1.png"
+		},
+		"festival10": {
+			"type": "image",
+			"width": 428,
+			"height": 53,
+			"path": "image/festival10.png"
+		},
+		"festival11": {
+			"type": "image",
+			"width": 184,
+			"height": 53,
+			"path": "image/festival11.png"
+		},
+		"festival12": {
+			"type": "image",
+			"width": 114,
+			"height": 53,
+			"path": "image/festival12.png"
+		},
+		"festival13": {
+			"type": "image",
+			"width": 288,
+			"height": 53,
+			"path": "image/festival13.png"
+		},
+		"festival2": {
+			"type": "image",
+			"width": 465,
+			"height": 53,
+			"path": "image/festival2.png"
+		},
+		"festival3": {
+			"type": "image",
+			"width": 204,
+			"height": 53,
+			"path": "image/festival3.png"
+		},
+		"festival4": {
+			"type": "image",
+			"width": 568,
+			"height": 53,
+			"path": "image/festival4.png"
+		},
+		"festival5": {
+			"type": "image",
+			"width": 428,
+			"height": 53,
+			"path": "image/festival5.png"
+		},
+		"festival6": {
+			"type": "image",
+			"width": 428,
+			"height": 53,
+			"path": "image/festival6.png"
+		},
+		"festival7": {
+			"type": "image",
+			"width": 498,
+			"height": 53,
+			"path": "image/festival7.png"
+		},
+		"festival8": {
+			"type": "image",
+			"width": 254,
+			"height": 53,
+			"path": "image/festival8.png"
+		},
+		"festival9": {
+			"type": "image",
+			"width": 184,
+			"height": 53,
+			"path": "image/festival9.png"
+		},
+		"festival": {
+			"type": "script",
+			"path": "script/festival.js",
+			"global": true
 		}
 	},
 	"moduleMainScripts": {},

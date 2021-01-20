@@ -3,6 +3,7 @@ import { Cast } from "./cast";
 import { Collabo } from "./collabo";
 import { Customer } from "./customer";
 import { Fence } from "./fence";
+import { Festival } from "./festival";
 import { Scorer } from "./scorer";
 import { Ticker } from "./ticker";
 import { Tweeter } from "./tweeter";
@@ -156,7 +157,20 @@ export function createGameScene(game: g.Game): g.Scene {
 			"collabo_tier3_disabled",
 			"ending",
 			"retry",
-			"ranking"
+			"ranking",
+			"festival1",
+			"festival2",
+			"festival3",
+			"festival4",
+			"festival5",
+			"festival6",
+			"festival7",
+			"festival8",
+			"festival9",
+			"festival10",
+			"festival11",
+			"festival12",
+			"festival13",
 		]
 	});
 
@@ -167,6 +181,13 @@ export function createGameScene(game: g.Game): g.Scene {
 			height: game.height
 		});
 		scene.append(container);
+		const festivalLayer = new g.E({
+			scene,
+			parent: container,
+			width: container.width - 250,
+			height: container.height
+		});
+
 		const customerLayer = new g.E({
 			scene,
 			parent: container,
@@ -461,6 +482,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			effect: 5 * game.fps,
 			minScore: 1,
 			messages: ["どーもー", "友人です", "一緒にやります", "それな", "そうそう", "それでね"],
+			isFestival: false,
 		}, {
 			tier: 2,
 			name: "中堅放送者",
@@ -471,6 +493,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			effect: 5 * game.fps,
 			minScore: 10,
 			messages: ["まいど！", "やってくぜ", "おもろ！", "そんでな", "ほうほう"],
+			isFestival: false,
 		}, {
 			tier: 3,
 			name: "大物放送者",
@@ -481,6 +504,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			effect: 5 * game.fps,
 			minScore: 30,
 			messages: ["わしじゃ", "ようこそ", "ほっほっほっ", "よきに"],
+			isFestival: true,
 		}];
 
 		collaboInfos.forEach((info, i) => {
@@ -601,6 +625,21 @@ export function createGameScene(game: g.Game): g.Scene {
 							}
 						}, info.coolDown, container);
 
+						const festivalAssets: g.ImageAsset[] = [];
+						for (let i = 0; i < 13; i++) {
+							festivalAssets.push(scene.asset.getImageById(`festival${i+1}`));
+						}
+
+						if (info.isFestival) {
+							new Festival({
+								scene,
+								panel: festivalLayer,
+								rand: game.random,
+								assets: festivalAssets,
+								num: 120,
+								speed: 15
+							});
+						}
 					},
 					onCollabo: (co) => {
 						customers.forEach(obj => {
