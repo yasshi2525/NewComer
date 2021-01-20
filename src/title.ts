@@ -102,6 +102,7 @@ export function createTitleScene(game: g.Game): g.Scene {
 			fontSize: 30,
 			fade: 1 * game.fps,
 			isPrintEffect: false,
+			effectAssets: [null, null, null],
 			onClose: () => {
 				cs.forEach(c => c.kill());
 				f.clear();

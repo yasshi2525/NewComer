@@ -16,6 +16,7 @@ export type FenceOption = {
 	onClose: (f: Fence) => void;
 	fade: number;
 	isPrintEffect: boolean;
+	effectAssets: g.ImageAsset[];
 };
 
 export class Fence {
@@ -35,6 +36,7 @@ export class Fence {
 	private _onClose: (f: Fence) => void;
 	private _fade: number;
 	private _isPrintEffect: boolean;
+	private _effectAssets: g.ImageAsset[];
 
 	constructor(opts: FenceOption) {
 		this._scene = opts.scene;
@@ -46,6 +48,7 @@ export class Fence {
 		this._rough_counter = 0;
 		this._fade = opts.fade;
 		this._isPrintEffect = opts.isPrintEffect;
+		this._effectAssets = opts.effectAssets;
 		this._isDrawing = false;
 
 		this._backPanel = new g.E({
@@ -155,7 +158,7 @@ export class Fence {
 	get tier(): number {
 		const base = this._sensor.width + this._sensor.height;
 		const len = this.length;
-		return Math.floor(base/len);
+		return Math.min(Math.floor(base/len), 2) + 1;
 	}
 
 	private isCross(from: Point, to: Point): { cross: boolean; index: number } {
@@ -281,24 +284,16 @@ export class Fence {
 					});
 				}
 				if (this._isPrintEffect) {
-					new g.Label({
-						scene: this._scene,
-						parent: front,
-						font: this._font,
-						fontSize: this._fontSize,
-						x: front.width / 2.5,
-						y: front.height * 2 / 3,
-						text: `範囲: ${this.area}`
-					});
-					new g.Label({
-						scene: this._scene,
-						parent: front,
-						font: this._font,
-						fontSize: this._fontSize,
-						x: front.width / 2.5,
-						y: front.height * 2 / 3 + this._fontSize * 1.5,
-						text: `効果: ${this.effect}`
-					});
+					if (this._effectAssets[this.tier-1]) {
+						const sprite = new g.Sprite({
+							scene: this._scene,
+							parent: front,
+							src: this._effectAssets[this.tier-1]
+						});
+						sprite.x = (front.width - sprite.width) / 2;
+						sprite.y = front.height * 2 / 3 - sprite.height / 2;
+						sprite.modified();
+					}
 				}
 			},
 			onCount: (cnt: number) => {
@@ -309,29 +304,5 @@ export class Fence {
 				effect.destroy();
 			}
 		}, this._fade, this._panel);
-	}
-
-	private get area(): string {
-		switch (this.tier) {
-			case 0:
-				return "広";
-			case 1:
-			case 2:
-				return "中";
-			default:
-				return "狭";
-		}
-	}
-
-	private get effect(): string {
-		switch (this.tier) {
-			case 0:
-				return "低";
-			case 1:
-			case 2:
-				return "中";
-			default:
-				return "高";
-		}
 	}
 }

@@ -139,6 +139,8 @@ export function createGameScene(game: g.Game): g.Scene {
 			"customer_fail",
 			"fence_success",
 			"fence_fail",
+			"effect_tier1",
+			"effect_tier3",
 			"tweet_img",
 			"score_main",
 			"score_main_glyphs",
@@ -427,13 +429,17 @@ export function createGameScene(game: g.Game): g.Scene {
 			fontSize: 30,
 			fade: 1 * game.fps,
 			isPrintEffect: true,
+			effectAssets: [
+				scene.asset.getImageById("effect_tier1"),
+				null,
+				scene.asset.getImageById("effect_tier3")
+			],
 			onClose: (f: Fence) => {
 				let rate = 0;
 				switch (f.tier) {
-					case 0:
+					case 1:
 						rate = 0.25;
 						break;
-					case 1:
 					case 2:
 						rate = 0.5;
 						break;

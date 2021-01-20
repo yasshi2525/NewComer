@@ -265,6 +265,18 @@
 			"width": 200,
 			"height": 100,
 			"path": "image/collabo_tier3_enabled.png"
+		},
+		"effect_tier1": {
+			"type": "image",
+			"width": 231,
+			"height": 75,
+			"path": "image/effect_tier1.png"
+		},
+		"effect_tier3": {
+			"type": "image",
+			"width": 231,
+			"height": 75,
+			"path": "image/effect_tier3.png"
 		}
 	},
 	"moduleMainScripts": {},
