@@ -4,10 +4,13 @@ import { Fence } from "./fence";
 import { createGameScene } from "./game";
 import { appendCountDown } from "./utils";
 
-export function createTitleScene(game: g.Game): g.Scene {
+export function createTitleScene(game: g.Game, timeLimit: number, isAtsumaru: boolean): g.Scene {
 	const scene = new g.Scene({
 		game,
 		assetIds: [
+			"start_countdown",
+			"score_main",
+			"score_main_glyphs",
 			"title_text",
 			"title_inst1",
 			"title_inst2",
@@ -44,9 +47,11 @@ export function createTitleScene(game: g.Game): g.Scene {
 			height: game.height,
 			touchable: true,
 		});
-		sensor.onPointUp.add(() => {
-			game.pushScene(createGameScene(game));
-		});
+		if (isAtsumaru) {
+			sensor.onPointUp.add(() => {
+				game.pushScene(createGameScene(game, timeLimit));
+			});
+		}
 		scene.append(sensor);
 
 		const title = new g.Sprite({
@@ -73,13 +78,15 @@ export function createTitleScene(game: g.Game): g.Scene {
 		});
 		inst2.x = (titleLayer.width - inst2.width) / 2;
 
-		const inst3 = new g.Sprite({
-			scene,
-			parent: titleLayer,
-			src: scene.asset.getImageById("title_inst3"),
-			y: titleLayer.height - 60
-		});
-		inst3.x = (titleLayer.width - inst3.width) / 2;
+		if (isAtsumaru) {
+			const inst3 = new g.Sprite({
+				scene,
+				parent: titleLayer,
+				src: scene.asset.getImageById("title_inst3"),
+				y: titleLayer.height - 60
+			});
+			inst3.x = (titleLayer.width - inst3.width) / 2;
+		}
 
 		new Cast({
 			scene,
@@ -108,7 +115,43 @@ export function createTitleScene(game: g.Game): g.Scene {
 				f.clear();
 			}
 		});
-		animateFence({game, scene, panel: backgroundLayer, cs, f});
+		animateFence({ game, scene, panel: backgroundLayer, cs, f });
+
+		if (!isAtsumaru) {
+			const countHeader = new g.Sprite({
+				scene,
+				parent: titleLayer,
+				src: scene.asset.getImageById("start_countdown")
+			});
+			countHeader.x = titleLayer.width - countHeader.width - 20;
+			countHeader.y = titleLayer.height - countHeader.height - 70;
+			countHeader.modified();
+
+			const countLabel = new g.Label({
+				scene,
+				parent: titleLayer,
+				font: new g.BitmapFont({
+					src: scene.asset.getImageById("score_main"),
+					glyphInfo: JSON.parse(scene.asset.getTextById("score_main_glyphs").data)
+				}),
+				fontSize: 50,
+				text: "10"
+			});
+			appendCountDown({
+				onStart: () => {
+					countLabel.x = titleLayer.width - countLabel.width - 20;
+					countLabel.y = titleLayer.height - countLabel.height - 20;
+					countLabel.modified();
+				},
+				onCount: (cnt) => {
+					countLabel.text = ` ${Math.floor(cnt / game.fps)}`.slice(-2);
+					countLabel.invalidate();
+				},
+				onEnd: () => {
+					game.pushScene(createGameScene(game, timeLimit));
+				}
+			}, 10 * game.fps, titleLayer);
+		}
 	});
 
 	return scene;

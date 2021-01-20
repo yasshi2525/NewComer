@@ -126,7 +126,7 @@ function spawn(opts: {
 	}, opts.interval, opts.customerLayer);
 }
 
-export function createGameScene(game: g.Game): g.Scene {
+export function createGameScene(game: g.Game, timeLimit: number): g.Scene {
 	const scene = new g.Scene({
 		game,
 		assetIds: [
@@ -311,7 +311,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			panel: scoreLayer,
 			size: 30,
 			fps: game.fps,
-			time: 90,
+			time: timeLimit,
 			onEnd: () => {
 				customers.forEach(obj => {
 					obj.t.end();
@@ -342,7 +342,7 @@ export function createGameScene(game: g.Game): g.Scene {
 					replay.modified();
 
 					replay.onPointUp.add(() => {
-						game.pushScene(createGameScene(game));
+						game.pushScene(createGameScene(game, timeLimit));
 					});
 
 					window.RPGAtsumaru.scoreboards
@@ -378,6 +378,16 @@ export function createGameScene(game: g.Game): g.Scene {
 								});
 							});
 						});
+				} else {
+					// ニコ生時は背景を暗くする
+					new g.FilledRect({
+						scene,
+						parent: actionLayer,
+						width: container.width,
+						height: container.height,
+						cssColor: "#000000",
+						opacity: 0.4
+					});
 				}
 			}
 		});
@@ -392,6 +402,7 @@ export function createGameScene(game: g.Game): g.Scene {
 			y: 45,
 			panel: scoreLayer,
 			size: 30,
+			gameState: game.vars.gameState
 		});
 
 		const customers: { c: Customer; t: Tweeter }[] = [];
@@ -460,7 +471,9 @@ export function createGameScene(game: g.Game): g.Scene {
 							obj.c.kill();
 							obj.t.kill();
 							anyKilled = true;
-							scorer.add(1);
+							if (!ticker.isEnd) {
+								scorer.add(1);
+							}
 						} else {
 							obj.c.reject();
 							anyReject = true;

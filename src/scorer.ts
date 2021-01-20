@@ -5,6 +5,7 @@ function toText(score: number): string {
 }
 
 export type ScorerOption = {
+	gameState: {score: number};
 	scene: g.Scene;
 	font: g.Font;
 	size: number;
@@ -14,12 +15,13 @@ export type ScorerOption = {
 };
 
 export class Scorer {
-	private _score: number;
+	private _gameState: {score: number};
 	private _label: g.Label;
 	private _listners: ((s: Scorer) => void)[];
 
 	constructor(opts: ScorerOption) {
-		this._score = 0;
+		this._gameState = opts.gameState;
+		this._gameState.score = 0;
 		this._listners = [];
 		this._label = new g.Label({
 			scene: opts.scene,
@@ -27,15 +29,15 @@ export class Scorer {
 			y: opts.y,
 			font: opts.font,
 			fontSize: opts.size,
-			text: toText(this._score)
+			text: toText(this._gameState.score)
 		});
 		opts.panel.append(this._label);
 	}
 
 	add(score: number): void {
-		this._score += score;
+		this._gameState.score += score;
 		this._listners.forEach(fn => fn(this));
-		this._label.text = toText(this._score);
+		this._label.text = toText(this._gameState.score);
 		this._label.invalidate();
 	}
 
@@ -44,6 +46,6 @@ export class Scorer {
 	}
 
 	get value(): number {
-		return this._score;
+		return this._gameState.score;
 	}
 }

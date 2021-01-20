@@ -2,7 +2,7 @@
 	"width": 816,
 	"height": 624,
 	"fps": 30,
-	"main": "./script/main.js",
+	"main": "./script/_bootstrap.js",
 	"assets": {
 		"customer_img": {
 			"type": "image",
@@ -366,11 +366,35 @@
 			"path": "audio/fence_failed_nc63801",
 			"systemId": "sound",
 			"duration": 2000
+		},
+		"start_countdown": {
+			"type": "image",
+			"width": 84,
+			"height": 29,
+			"path": "image/start_countdown.png"
+		},
+		"parameterObject": {
+			"type": "script",
+			"path": "script/parameterObject.js",
+			"global": true
+		},
+		"_bootstrap": {
+			"type": "script",
+			"path": "script/_bootstrap.js",
+			"global": true
 		}
 	},
 	"moduleMainScripts": {},
 	"environment": {
-		"sandbox-runtime": "3"
+		"sandbox-runtime": "3",
+		"niconico": {
+			"supportedModes": [
+				"ranking"
+			],
+			"preferredSessionParameters": {
+				"totalTimeLimit": 120
+			}
+		}
 	},
 	"globalScripts": []
 }
