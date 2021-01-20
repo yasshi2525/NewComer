@@ -185,7 +185,7 @@
 		"title_text": {
 			"type": "image",
 			"width": 615,
-			"height": 91,
+			"height": 90,
 			"path": "image/title_text.png"
 		},
 		"title_inst3": {
@@ -196,14 +196,14 @@
 		},
 		"inst1": {
 			"type": "image",
-			"width": 656,
-			"height": 38,
+			"width": 525,
+			"height": 30,
 			"path": "image/inst1.png"
 		},
 		"inst2": {
 			"type": "image",
-			"width": 431,
-			"height": 38,
+			"width": 345,
+			"height": 30,
 			"path": "image/inst2.png"
 		},
 		"fence_fail": {
@@ -217,6 +217,54 @@
 			"width": 66,
 			"height": 38,
 			"path": "image/fence_success.png"
+		},
+		"advertise_disabled": {
+			"type": "image",
+			"width": 200,
+			"height": 100,
+			"path": "image/advertise_disabled.png"
+		},
+		"advertise_enabled": {
+			"type": "image",
+			"width": 200,
+			"height": 100,
+			"path": "image/advertise_enabled.png"
+		},
+		"collabo_tier1_disabled": {
+			"type": "image",
+			"width": 200,
+			"height": 100,
+			"path": "image/collabo_tier1_disabled.png"
+		},
+		"collabo_tier1_enabled": {
+			"type": "image",
+			"width": 200,
+			"height": 100,
+			"path": "image/collabo_tier1_enabled.png"
+		},
+		"collabo_tier2_disabled": {
+			"type": "image",
+			"width": 200,
+			"height": 100,
+			"path": "image/collabo_tier2_disabled.png"
+		},
+		"collabo_tier2_enabled": {
+			"type": "image",
+			"width": 200,
+			"height": 100,
+			"path": "image/collabo_tier2_enabled.png"
+		},
+		"collabo_tier3_disabled": {
+			"type": "image",
+			"width": 200,
+			"height": 100,
+			"path": "image/collabo_tier3_disabled.png"
+		},
+		"collabo_tier3_enabled": {
+			"type": "image",
+			"width": 200,
+			"height": 100,
+			"path": "image/collabo_tier3_enabled.png"
 		}
 	},
 	"moduleMainScripts": {},

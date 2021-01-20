@@ -7,7 +7,8 @@ export type CollaboOption = {
 	lockAsset: g.ImageAsset;
 	lockScale: number;
 	lockFont: g.Font;
-	collaboAsset: g.ImageAsset;
+	enabledAsset: g.ImageAsset;
+	disabledAsset: g.ImageAsset;
 	collaboScale: number;
 	collaboFont: g.Font;
 	collaboText: [string, string];
@@ -36,7 +37,6 @@ export type CollaboOption = {
 export class Collabo {
 	private _scene: g.Scene;
 	private _panel: g.E;
-	private _board: g.FilledRect;
 	private _lockSprite: g.Sprite;
 	private _lockLabel: g.Label;
 	private _opacity: number;
@@ -73,65 +73,53 @@ export class Collabo {
 		this._coolDownHeight = opts.coolDownHeight;
 		this._coolDownColor = opts.coolDownColor;
 
-		this._board = new g.FilledRect({
+		const lockBoard = new g.FilledRect({
 			scene: opts.scene,
 			parent: opts.panel,
 			cssColor: opts.lockedColor,
 			width: opts.panel.width,
 			height: opts.panel.height,
-			touchable: true
 		});
 
 		this._lockSprite = new g.Sprite({
 			scene: opts.scene,
-			parent: this._board,
+			parent: lockBoard,
 			src: opts.lockAsset,
 			scaleX: opts.lockScale,
 			scaleY: opts.lockScale,
-			x: (this._board.width - opts.lockAsset.width * opts.lockScale) / 2,
-			y: (this._board.height - opts.lockAsset.height * opts.lockScale) / 2 - opts.fontSize,
+			x: (lockBoard.width - opts.lockAsset.width * opts.lockScale) / 2,
+			y: (lockBoard.height - opts.lockAsset.height * opts.lockScale) / 2 - opts.fontSize,
 		});
 
 		this._lockLabel = new g.Label({
 			scene: opts.scene,
-			parent: this._board,
+			parent: lockBoard,
 			font: opts.lockFont,
 			fontSize: opts.fontSize,
 			text: `${this._minScore} 人の常連が必要です`,
-			x: this._board.width / 8,
-			y: (this._board.height - opts.lockAsset.height * opts.lockScale) / 2 + opts.fontSize * 2
 		});
+		this._lockLabel.x = (lockBoard.width - this._lockLabel.width) / 2;
+		this._lockLabel.y = (lockBoard.height - opts.lockAsset.height * opts.lockScale) / 2 + opts.fontSize * 2;
+		this._lockSprite.modified();
 
-		const collaboSprite = new g.Sprite({
+		const enabledSprite = new g.Sprite({
 			scene: opts.scene,
-			parent: this._board,
-			src: opts.collaboAsset,
+			parent: this._panel,
+			src: opts.enabledAsset,
 			scaleX: opts.collaboScale,
 			scaleY: opts.collaboScale,
-			x: this._board.width / 32,
-			y: (this._board.height - opts.collaboAsset.height * opts.collaboScale) / 2
+			touchable: true,
 		});
-		collaboSprite.hide();
-		const collaboLabel1 = new g.Label({
+		enabledSprite.hide();
+
+		const disabledSprite = new g.Sprite({
 			scene: opts.scene,
-			parent: this._board,
-			font: opts.collaboFont,
-			fontSize: opts.fontSize,
-			text: opts.collaboText[0],
-			x: this._board.width / 3,
-			y: this._board.height / 2 - opts.fontSize * 1.5
+			parent: this._panel,
+			src: opts.disabledAsset,
+			scaleX: opts.collaboScale,
+			scaleY: opts.collaboScale,
 		});
-		collaboLabel1.hide();
-		const collaboLabel2 = new g.Label({
-			scene: opts.scene,
-			parent: this._board,
-			font: opts.collaboFont,
-			fontSize: opts.fontSize,
-			text: opts.collaboText[1],
-			x: this._board.width / 3,
-			y: this._board.height / 2 + opts.fontSize
-		});
-		collaboLabel2.hide();
+		disabledSprite.hide();
 
 		const spriteOnCast = new g.Sprite({
 			scene: opts.scene,
@@ -147,47 +135,45 @@ export class Collabo {
 			if (this._lockSprite.visible() && s.value >= this._minScore) {
 				this._lockSprite.hide();
 				this._lockLabel.hide();
-				collaboSprite.show();
-				collaboLabel1.show();
-				collaboLabel2.show();
-				this._board.cssColor = opts.enabledColor;
+				lockBoard.hide();
+				enabledSprite.show();
 			}
 		});
 
-		this._board.onPointUp.add(() => {
+		enabledSprite.onPointUp.add(() => {
 			if (this._scorer.value >= this._minScore && !this._isCoolDown) {
 
 				const coolDownBar = new g.FilledRect({
 					scene: this._scene,
-					parent: this._board,
-					width: this._board.width,
+					parent: this._panel,
+					width: enabledSprite.width,
 					height: this._coolDownHeight,
-					y: this._board.height - this._coolDownHeight,
+					y: enabledSprite.height - this._coolDownHeight,
 					cssColor: this._coolDownColor
 				});
 
 				appendCountDown({
 					onStart: () => {
 						this._isCoolDown = true;
-						this._board.cssColor = opts.disabledColor;
-						this._board.modified();
+						enabledSprite.hide();
+						disabledSprite.show();
 					},
 					onCount: (cnt) => {
-						coolDownBar.width = this._board.width * cnt / this._coolDown;
+						coolDownBar.width = enabledSprite.width * cnt / this._coolDown;
 						coolDownBar.modified();
 					},
 					onEnd: () => {
 						this._isCoolDown = false;
-						this._board.cssColor = opts.enabledColor;
-						this._board.modified();
 						coolDownBar.destroy();
+						enabledSprite.show();
+						disabledSprite.hide();
 					}
-				}, this._coolDown, this._board);
+				}, this._coolDown, this._panel);
 
 				const effectBar = new g.FilledRect({
 					scene: this._scene,
-					parent: this._board,
-					width: this._board.width / 8,
+					parent: this._panel,
+					width: this._panel.width / 8,
 					height: opts.effectHeight,
 					cssColor: opts.effectColor
 				});
@@ -199,7 +185,7 @@ export class Collabo {
 						this._onStart(this);
 					},
 					onCount: (cnt) => {
-						effectBar.width = this._board.width / 8 * cnt / this._effect;
+						effectBar.width = this._panel.width / 8 * cnt / this._effect;
 						effectBar.modified();
 						this._onCollabo(this);
 					},
@@ -209,7 +195,7 @@ export class Collabo {
 						effectBar.destroy();
 						this._onEnd(this);
 					}
-				}, this._effect, this._board);
+				}, this._effect, this._panel);
 			}
 		});
 	}

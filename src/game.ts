@@ -145,6 +145,12 @@ export function createGameScene(game: g.Game): g.Scene {
 			"collabo_cast_tier1",
 			"collabo_cast_tier2",
 			"collabo_cast_tier3",
+			"collabo_tier1_enabled",
+			"collabo_tier2_enabled",
+			"collabo_tier3_enabled",
+			"collabo_tier1_disabled",
+			"collabo_tier2_disabled",
+			"collabo_tier3_disabled",
 		]
 	});
 
@@ -209,8 +215,6 @@ export function createGameScene(game: g.Game): g.Scene {
 			src: scene.asset.getImageById("inst1"),
 			x: 15,
 			y: 15,
-			scaleX: 0.8,
-			scaleY: 0.8
 		});
 		new g.Sprite({
 			scene,
@@ -218,8 +222,6 @@ export function createGameScene(game: g.Game): g.Scene {
 			src: scene.asset.getImageById("inst2"),
 			x: 15,
 			y: 45,
-			scaleX: 0.8,
-			scaleY: 0.8
 		});
 
 		new Cast({
@@ -496,9 +498,9 @@ export function createGameScene(game: g.Game): g.Scene {
 				scene,
 				parent: actionLayer,
 				x: actionLayer.width - 250,
-				y: i * 100 + 150,
+				y: i * 120 + 150,
 				width: 200,
-				height: 90
+				height: 100
 			});
 
 			const collaboTweeter = new Tweeter({
@@ -558,7 +560,8 @@ export function createGameScene(game: g.Game): g.Scene {
 						size: 15
 					}),
 					lockScale: 0.125,
-					collaboAsset: scene.asset.getImageById(`collabo_cast_tier${info.tier}`),
+					enabledAsset: scene.asset.getImageById(`collabo_tier${info.tier}_enabled`),
+					disabledAsset: scene.asset.getImageById(`collabo_tier${info.tier}_disabled`),
 					collaboFont: new g.DynamicFont({
 						game,
 						fontFamily: "sans-serif",
