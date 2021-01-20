@@ -171,6 +171,9 @@ export function createGameScene(game: g.Game): g.Scene {
 			"festival11",
 			"festival12",
 			"festival13",
+			"fence_nc227995",
+			"festival_nc176457",
+			"fence_failed_nc63801"
 		]
 	});
 
@@ -374,7 +377,6 @@ export function createGameScene(game: g.Game): g.Scene {
 									window.RPGAtsumaru.scoreboards.display(1);
 								});
 							});
-
 						});
 				}
 			}
@@ -450,17 +452,26 @@ export function createGameScene(game: g.Game): g.Scene {
 					default:
 						rate = 0.75;
 				}
+				let anyKilled = false;
+				let anyReject = false;
 				customers.forEach((obj) => {
 					if (f.isInner(obj.c.x, obj.c.y)) {
 						if (game.random.generate() < rate) {
 							obj.c.kill();
 							obj.t.kill();
+							anyKilled = true;
 							scorer.add(1);
 						} else {
 							obj.c.reject();
+							anyReject = true;
 						}
 					}
 				});
+				if (anyKilled) {
+					scene.asset.getAudioById("fence_nc227995").play();
+				} else if (anyReject) {
+					scene.asset.getAudioById("fence_failed_nc63801").play();
+				}
 				const old = [...customers];
 				customers.splice(0);
 				old.forEach((obj) => {
@@ -637,7 +648,8 @@ export function createGameScene(game: g.Game): g.Scene {
 								rand: game.random,
 								assets: festivalAssets,
 								num: 120,
-								speed: 15
+								speed: 15,
+								audio: scene.asset.getAudioById("festival_nc176457")
 							});
 						}
 					},

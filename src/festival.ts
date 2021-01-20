@@ -7,10 +7,12 @@ export type FestivalOption = {
 	num: number;
 	speed: number;
 	assets: g.ImageAsset[];
+	audio: g.AudioAsset;
 };
 
 export class Festival {
 	constructor(opts: FestivalOption) {
+		opts.audio.play();
 		for (let i = 0; i < opts.num; i++) {
 			const i = Math.floor(opts.rand.generate() * opts.assets.length);
 			const sprite = new g.Sprite({

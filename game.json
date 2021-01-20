@@ -348,6 +348,24 @@
 			"type": "script",
 			"path": "script/festival.js",
 			"global": true
+		},
+		"fence_nc227995": {
+			"type": "audio",
+			"path": "audio/fence_nc227995",
+			"systemId": "sound",
+			"duration": 5064
+		},
+		"festival_nc176457": {
+			"type": "audio",
+			"path": "audio/festival_nc176457",
+			"systemId": "sound",
+			"duration": 8008
+		},
+		"fence_failed_nc63801": {
+			"type": "audio",
+			"path": "audio/fence_failed_nc63801",
+			"systemId": "sound",
+			"duration": 2000
 		}
 	},
 	"moduleMainScripts": {},
