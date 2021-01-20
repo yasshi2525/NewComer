@@ -334,7 +334,6 @@ export function createGameScene(game: g.Game): g.Scene {
 								ranking.x = (scoreLayer.width - 250  - ranking.width) / 2;
 								ranking.y = replay.y + replay.height + 20;
 								ranking.modified();
-								res.myRecord.rank = 10000;
 								const txt = (res.myRecord.rank < 10000) ? `    ${res.myRecord.rank}`.slice(-4) : `${res.myRecord.rank}`;
 								new g.Label({
 									scene,
