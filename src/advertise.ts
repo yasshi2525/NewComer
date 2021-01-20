@@ -3,7 +3,8 @@ import { appendCountDown } from "./utils";
 export type AdvertiseOption = {
 	scene: g.Scene;
 	panel: g.E;
-	asset: g.ImageAsset;
+	enabledAsset: g.ImageAsset;
+	disabledAsset: g.ImageAsset;
 	opacity: number;
 	barHeight: number;
 	barColor: string;
@@ -14,7 +15,6 @@ export type AdvertiseOption = {
 export class Advertise {
 	private _scene: g.Scene;
 	private _panel: g.E;
-	private _sprite: g.Sprite;
 	private _opacity: number;
 	private _barHeight: number;
 	private _barColor: string;
@@ -32,36 +32,45 @@ export class Advertise {
 		this._opacity = opts.opacity;
 		this._barHeight = opts.barHeight;
 		this._barColor = opts.barColor;
-		this._sprite = new g.Sprite({
+		const enabledSprite = new g.Sprite({
 			scene: opts.scene,
 			parent: opts.panel,
-			src: opts.asset,
+			src: opts.enabledAsset,
 			touchable: true
 		});
-		this._sprite.onPointUp.add(() => {
+		const disabledSprite = new g.Sprite({
+			scene: opts.scene,
+			parent: opts.panel,
+			src: opts.disabledAsset,
+			touchable: true
+		});
+		disabledSprite.hide();
+
+		enabledSprite.onPointUp.add(() => {
 			if (!this._isCoolDown) {
 				const coolDownBar = new g.FilledRect({
 					scene: this._scene,
 					parent: this._panel,
-					width: this._sprite.width,
+					width: enabledSprite.width,
 					height: this._barHeight,
-					y: this._sprite.height - this._barHeight,
+					y: enabledSprite.height - this._barHeight,
 					cssColor: this._barColor
 				});
 				appendCountDown({
 					onStart: () => {
 						this._isCoolDown = true;
-						this._sprite.opacity = this._opacity;
+						enabledSprite.hide();
+						disabledSprite.show();
 						this._onAdvertise(this);
 					},
 					onCount: (cnt: number) => {
-						coolDownBar.width = this._sprite.width * cnt / this._coolDown;
+						coolDownBar.width = enabledSprite.width * cnt / this._coolDown;
 						coolDownBar.modified();
 					},
 					onEnd: () => {
 						this._isCoolDown = false;
-						this._sprite.opacity = 1.0;
-						this._sprite.modified();
+						enabledSprite.show();
+						disabledSprite.hide();
 						coolDownBar.destroy();
 					}
 				}, this._coolDown, this._panel);

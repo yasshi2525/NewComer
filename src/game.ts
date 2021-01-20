@@ -132,7 +132,8 @@ export function createGameScene(game: g.Game): g.Scene {
 			"inst1",
 			"inst2",
 			"cast_img",
-			"advertise_img",
+			"advertise_enabled",
+			"advertise_disabled",
 			"customer_img",
 			"customer_success",
 			"customer_fail",
@@ -498,7 +499,7 @@ export function createGameScene(game: g.Game): g.Scene {
 				scene,
 				parent: actionLayer,
 				x: actionLayer.width - 250,
-				y: i * 120 + 150,
+				y: i * 120 + 220,
 				width: 200,
 				height: 100
 			});
@@ -614,13 +615,14 @@ export function createGameScene(game: g.Game): g.Scene {
 				scene,
 				parent: actionLayer,
 				x: actionLayer.width - 250,
-				y: 80,
+				y: 100,
 			}),
-			asset: scene.asset.getImageById("advertise_img"),
+			enabledAsset: scene.asset.getImageById("advertise_enabled"),
+			disabledAsset: scene.asset.getImageById("advertise_disabled"),
 			barColor: "#ff0000",
 			barHeight: 5,
 			coolDown: 10 * game.fps,
-			opacity: 0.25,
+			opacity: 1,
 			onAdvertise: () => {
 				for (let i = 0; i < 10; i++) {
 					customers.push(createCustomer({
