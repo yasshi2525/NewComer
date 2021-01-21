@@ -110,6 +110,7 @@ export function createTitleScene(game: g.Game, timeLimit: number, isAtsumaru: bo
 			fade: 1 * game.fps,
 			isPrintEffect: false,
 			effectAssets: [null, null, null],
+			effectDetailsAssets: [null, null, null],
 			onClose: () => {
 				cs.forEach(c => c.kill());
 				f.clear();

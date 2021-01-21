@@ -17,6 +17,7 @@ export type FenceOption = {
 	fade: number;
 	isPrintEffect: boolean;
 	effectAssets: g.ImageAsset[];
+	effectDetailsAssets: g.ImageAsset[];
 };
 
 export class Fence {
@@ -37,6 +38,7 @@ export class Fence {
 	private _fade: number;
 	private _isPrintEffect: boolean;
 	private _effectAssets: g.ImageAsset[];
+	private _effectDetailsAssets: g.ImageAsset[];
 
 	constructor(opts: FenceOption) {
 		this._scene = opts.scene;
@@ -49,6 +51,7 @@ export class Fence {
 		this._fade = opts.fade;
 		this._isPrintEffect = opts.isPrintEffect;
 		this._effectAssets = opts.effectAssets;
+		this._effectDetailsAssets = opts.effectDetailsAssets;
 		this._isDrawing = false;
 
 		this._backPanel = new g.E({
@@ -292,6 +295,16 @@ export class Fence {
 						});
 						sprite.x = (front.width - sprite.width) / 2;
 						sprite.y = front.height * 2 / 3 - sprite.height / 2;
+						sprite.modified();
+					}
+					if (this._effectDetailsAssets[this.tier-1]) {
+						const sprite = new g.Sprite({
+							scene: this._scene,
+							parent: front,
+							src: this._effectDetailsAssets[this.tier-1]
+						});
+						sprite.x = (front.width - sprite.width) / 2;
+						sprite.y = front.height * 2 / 3 - sprite.height / 2 + sprite.height;
 						sprite.modified();
 					}
 				}

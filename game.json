@@ -382,6 +382,24 @@
 			"type": "script",
 			"path": "script/_bootstrap.js",
 			"global": true
+		},
+		"effect_details_tier1": {
+			"type": "image",
+			"width": 210,
+			"height": 45,
+			"path": "image/effect_details_tier1.png"
+		},
+		"effect_details_tier2": {
+			"type": "image",
+			"width": 210,
+			"height": 45,
+			"path": "image/effect_details_tier2.png"
+		},
+		"effect_details_tier3": {
+			"type": "image",
+			"width": 210,
+			"height": 45,
+			"path": "image/effect_details_tier3.png"
 		}
 	},
 	"moduleMainScripts": {},

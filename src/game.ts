@@ -142,6 +142,9 @@ export function createGameScene(game: g.Game, timeLimit: number): g.Scene {
 			"fence_fail",
 			"effect_tier1",
 			"effect_tier3",
+			"effect_details_tier1",
+			"effect_details_tier2",
+			"effect_details_tier3",
 			"tweet_img",
 			"score_main",
 			"score_main_glyphs",
@@ -450,6 +453,11 @@ export function createGameScene(game: g.Game, timeLimit: number): g.Scene {
 				scene.asset.getImageById("effect_tier1"),
 				null,
 				scene.asset.getImageById("effect_tier3")
+			],
+			effectDetailsAssets: [
+				scene.asset.getImageById("effect_details_tier1"),
+				scene.asset.getImageById("effect_details_tier2"),
+				scene.asset.getImageById("effect_details_tier3"),
 			],
 			onClose: (f: Fence) => {
 				let rate = 0;
