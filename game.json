@@ -400,6 +400,12 @@
 			"width": 210,
 			"height": 45,
 			"path": "image/effect_details_tier3.png"
+		},
+		"tweet_success": {
+			"type": "image",
+			"width": 256,
+			"height": 256,
+			"path": "image/tweet_success.png"
 		}
 	},
 	"moduleMainScripts": {},

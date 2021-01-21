@@ -226,6 +226,10 @@ export class Customer {
 		return {x: this._sprite.x, y: this._sprite.y};
 	}
 
+	get rect(): { x: number; y: number } {
+		return {x: this._sprite.width, y: this._sprite.height};
+	}
+
 	set position(v: {x: number; y: number}) {
 		this._sprite.x = v.x;
 		this._sprite.y = v.y;

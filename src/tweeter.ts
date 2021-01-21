@@ -18,11 +18,11 @@ export type TweeterOption = {
 	coolDown: number;
 	delay: number;
 	events: {
-		start: Contents;
-		normal: Contents;
-		collabo: Contents;
-		advertise: Contents;
-		end: Contents;
+		start?: Contents;
+		normal?: Contents;
+		collabo?: Contents;
+		advertise?: Contents;
+		end?: Contents;
 	};
 };
 
@@ -40,11 +40,11 @@ export class Tweeter {
 	private _delay: number;
 	private _isDelay: boolean;
 	private _event: {
-		start: Contents;
-		normal: Contents;
-		collabo: Contents;
-		advertise: Contents;
-		end: Contents;
+		start?: Contents;
+		normal?: Contents;
+		collabo?: Contents;
+		advertise?: Contents;
+		end?: Contents;
 	};
 	constructor(opts: TweeterOption) {
 		this._scene = opts.scene;
@@ -84,31 +84,31 @@ export class Tweeter {
 	}
 
 	start(): void {
-		if (!this._isCoolDown && this._rand.generate() < this._event.start.rate) {
+		if (this._event.start && !this._isCoolDown && this._rand.generate() < this._event.start.rate) {
 			this.tweet(this._event.start.messages);
 		}
 	}
 
 	normal(): void {
-		if (!this._isCoolDown && this._rand.generate() < this._event.normal.rate) {
+		if (this._event.normal && !this._isCoolDown && this._rand.generate() < this._event.normal.rate) {
 			this.tweet(this._event.normal.messages);
 		}
 	}
 
 	collabo(): void {
-		if (!this._isCoolDown && this._rand.generate() < this._event.collabo.rate) {
+		if (this._event.collabo && !this._isCoolDown && this._rand.generate() < this._event.collabo.rate) {
 			this.tweet(this._event.collabo.messages);
 		}
 	}
 
 	advertise(): void {
-		if (!this._isCoolDown && this._rand.generate() < this._event.advertise.rate) {
+		if (this._event.advertise && !this._isCoolDown && this._rand.generate() < this._event.advertise.rate) {
 			this.tweet(this._event.advertise.messages);
 		}
 	}
 
 	end(): void {
-		if (this._rand.generate() < this._event.end.rate) {
+		if (this._event.end && this._rand.generate() < this._event.end.rate) {
 			this.tweet(this._event.end.messages);
 		}
 	}

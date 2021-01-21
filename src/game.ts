@@ -146,6 +146,7 @@ export function createGameScene(game: g.Game, timeLimit: number): g.Scene {
 			"effect_details_tier2",
 			"effect_details_tier3",
 			"tweet_img",
+			"tweet_success",
 			"score_main",
 			"score_main_glyphs",
 			"collabo_lock",
@@ -435,6 +436,12 @@ export function createGameScene(game: g.Game, timeLimit: number): g.Scene {
 			fontFamily: "sans-serif",
 			size: 15
 		});
+		const tweetSuccessFont = new g.DynamicFont({
+			game,
+			fontFamily: "sans-serif",
+			size: 15,
+			fontColor: "#ffffff"
+		});
 
 		const fence = new Fence({
 			scene,
@@ -476,8 +483,44 @@ export function createGameScene(game: g.Game, timeLimit: number): g.Scene {
 				customers.forEach((obj) => {
 					if (f.isInner(obj.c.x, obj.c.y)) {
 						if (game.random.generate() < rate) {
+							const pos = obj.c.position;
+							const rect = obj.c.rect;
 							obj.c.kill();
 							obj.t.kill();
+							let count = 0;
+							const successTweet = new Tweeter({
+								scene,
+								panel: tweetLayer,
+								asset: scene.asset.getImageById("tweet_success"),
+								effect: 1 * game.fps,
+								coolDown: 0,
+								delay: 0,
+								font: tweetSuccessFont,
+								events: {
+									start: {
+										messages: ["ついてきます", "常連になる！", "通うわ", "囲うわ"],
+										rate: 1.0
+									}
+								},
+								position: () => ({
+									x: pos.x,
+									y: pos.y - count * rect.y / game.fps
+								}),
+								rand: game.random,
+								scale: 0.25,
+								size: 15
+							});
+							appendCountDown({
+								onStart: () => {
+									successTweet.start();
+								},
+								onCount: () => {
+									count++;
+								},
+								onEnd: () => {
+									successTweet.kill();
+								}
+							}, 1 * game.fps, tweetLayer);
 							anyKilled = true;
 							if (!ticker.isEnd) {
 								scorer.add(1);
