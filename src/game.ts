@@ -142,9 +142,11 @@ export function createGameScene(game: g.Game, timeLimit: number): g.Scene {
 			"fence_fail",
 			"effect_tier1",
 			"effect_tier3",
+			"effect_allfail",
 			"effect_details_tier1",
 			"effect_details_tier2",
 			"effect_details_tier3",
+			"effect_allfail_details",
 			"tweet_img",
 			"tweet_success",
 			"score_main",
@@ -535,6 +537,38 @@ export function createGameScene(game: g.Game, timeLimit: number): g.Scene {
 					scene.asset.getAudioById("fence_nc227995").play();
 				} else if (anyReject) {
 					scene.asset.getAudioById("fence_failed_nc63801").play();
+					const allfail = new g.Sprite({
+						scene,
+						parent: fenceLayer,
+						src: scene.asset.getImageById("effect_allfail")
+					});
+					allfail.x = (fenceLayer.width - allfail.width) / 2;
+					allfail.y = fenceLayer.height * 2 / 3 + allfail.height * 2 / 3;
+					allfail.modified();
+
+					const allfailDetails = new g.Sprite({
+						scene,
+						parent: fenceLayer,
+						src: scene.asset.getImageById("effect_allfail_details")
+					});
+					allfailDetails.x = (fenceLayer.width - allfailDetails.width) / 2;
+					allfailDetails.y = fenceLayer.height * 2 / 3 + allfail.height + allfailDetails.height * 2 / 3;
+					allfailDetails.modified();
+
+					const fade = 1.5;
+
+					appendCountDown({
+						onCount: (cnt) => {
+							allfail.opacity = cnt / (fade * game.fps);
+							allfailDetails.opacity = cnt / (fade * game.fps);
+							allfail.modified();
+							allfailDetails.modified();
+						},
+						onEnd: () => {
+							allfail.destroy();
+							allfailDetails.destroy();
+						}
+					}, game.fps * fade, fenceLayer);
 				}
 				const old = [...customers];
 				customers.splice(0);

@@ -406,6 +406,18 @@
 			"width": 256,
 			"height": 256,
 			"path": "image/tweet_success.png"
+		},
+		"effect_allfail": {
+			"type": "image",
+			"width": 231,
+			"height": 75,
+			"path": "image/effect_allfail.png"
+		},
+		"effect_allfail_details": {
+			"type": "image",
+			"width": 429,
+			"height": 45,
+			"path": "image/effect_allfail_details.png"
 		}
 	},
 	"moduleMainScripts": {},
