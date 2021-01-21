@@ -126,7 +126,7 @@ function spawn(opts: {
 	}, opts.interval, opts.customerLayer);
 }
 
-export function createGameScene(game: g.Game, timeLimit: number): g.Scene {
+export function createGameScene(game: g.Game, timeLimit: number, isAtsumaru: boolean): g.Scene {
 	const scene = new g.Scene({
 		game,
 		assetIds: [
@@ -203,6 +203,46 @@ export function createGameScene(game: g.Game, timeLimit: number): g.Scene {
 			width: container.width - 250,
 			height: container.height
 		});
+
+		if (!isAtsumaru) {
+			new g.FilledRect({
+				scene,
+				parent: customerLayer,
+				x: 0,
+				y: 0,
+				width: 1,
+				height: customerLayer.height,
+				cssColor: "#000000"
+			});
+			new g.FilledRect({
+				scene,
+				parent: customerLayer,
+				x: customerLayer.width - 1,
+				y: 0,
+				width: 1,
+				height: customerLayer.height,
+				cssColor: "#000000"
+			});
+			new g.FilledRect({
+				scene,
+				parent: container,
+				x: 0,
+				y: 0,
+				width: customerLayer.width,
+				height: 1,
+				cssColor: "#000000"
+			});
+			new g.FilledRect({
+				scene,
+				parent: container,
+				x: 0,
+				y: customerLayer.height - 1,
+				width: customerLayer.width,
+				height: 1,
+				cssColor: "#000000"
+			});
+		}
+
 		const tweetLayer = new g.E({
 			scene,
 			parent: container,
@@ -348,7 +388,7 @@ export function createGameScene(game: g.Game, timeLimit: number): g.Scene {
 					replay.modified();
 
 					replay.onPointUp.add(() => {
-						game.pushScene(createGameScene(game, timeLimit));
+						game.pushScene(createGameScene(game, timeLimit, isAtsumaru));
 					});
 
 					window.RPGAtsumaru.scoreboards

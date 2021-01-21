@@ -49,7 +49,7 @@ export function createTitleScene(game: g.Game, timeLimit: number, isAtsumaru: bo
 		});
 		if (isAtsumaru) {
 			sensor.onPointUp.add(() => {
-				game.pushScene(createGameScene(game, timeLimit));
+				game.pushScene(createGameScene(game, timeLimit, isAtsumaru));
 			});
 		}
 		scene.append(sensor);
@@ -149,7 +149,7 @@ export function createTitleScene(game: g.Game, timeLimit: number, isAtsumaru: bo
 					countLabel.invalidate();
 				},
 				onEnd: () => {
-					game.pushScene(createGameScene(game, timeLimit));
+					game.pushScene(createGameScene(game, timeLimit, isAtsumaru));
 				}
 			}, 10 * game.fps, titleLayer);
 		}
