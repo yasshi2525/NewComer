@@ -28,6 +28,7 @@ export type CollaboOption = {
 	scorer: Scorer;
 	castAsset: g.ImageAsset;
 	castLayer: g.E;
+	onUnlock: (c: Collabo) => void;
 	onStart: (c: Collabo) => void;
 	onCollabo: (c: Collabo) => void;
 	onEnd: (c: Collabo) => void;
@@ -55,6 +56,7 @@ export class Collabo {
 	private _coolDown: number;
 	private _isCoolDown: boolean;
 	private _scorer: Scorer;
+	private _onUnlock: (c: Collabo) => void;
 	private _onStart: (c: Collabo) => void;
 	private _onCollabo: (c: Collabo) => void;
 	private _onEnd: (c: Collabo) => void;
@@ -69,6 +71,7 @@ export class Collabo {
 		this._minScore = opts.minScore;
 		this._isCoolDown = false;
 		this._scorer = opts.scorer;
+		this._onUnlock = opts.onUnlock;
 		this._onStart = opts.onStart;
 		this._onCollabo = opts.onCollabo;
 		this._onEnd = opts.onEnd;
@@ -162,6 +165,7 @@ export class Collabo {
 				if (this._coolDownCount > 0) {
 					this._coolDownBar.show();
 				}
+				this._onUnlock(this);
 			}
 		});
 

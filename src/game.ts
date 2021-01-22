@@ -132,6 +132,8 @@ export function createGameScene(game: g.Game, timeLimit: number, isAtsumaru: boo
 		assetIds: [
 			"inst1",
 			"inst2",
+			"guide_advertise",
+			"guide_collabo",
 			"cast_img",
 			"advertise_enabled",
 			"advertise_disabled",
@@ -632,6 +634,28 @@ export function createGameScene(game: g.Game, timeLimit: number, isAtsumaru: boo
 			minScore: 1,
 			messages: ["どーもー", "友人です", "一緒にやります", "それな", "そうそう", "それでね"],
 			isFestival: false,
+			onUnlock: () => {
+				const guide = new g.Sprite({
+					scene,
+					parent: scoreLayer,
+					src: scene.asset.getImageById("guide_collabo"),
+				});
+
+				appendCountDown({
+					onStart: () => {
+						guide.x = actionLayer.width - 250 - guide.width;
+						guide.y = 220;
+						guide.modified();
+					},
+					onCount: (cnt) => {
+						guide.opacity = 0.5 + cnt / (game.fps * 6);
+						guide.modified();
+					},
+					onEnd: () => {
+						guide.destroy();
+					}
+				}, game.fps * 3, scoreLayer);
+			}
 		}, {
 			tier: 2,
 			name: "中堅放送者",
@@ -643,6 +667,7 @@ export function createGameScene(game: g.Game, timeLimit: number, isAtsumaru: boo
 			minScore: 10,
 			messages: ["まいど！", "やってくぜ", "おもろ！", "そんでな", "ほうほう"],
 			isFestival: false,
+			onUnlock: (): void => undefined,
 		}, {
 			tier: 3,
 			name: "大物放送者",
@@ -654,6 +679,7 @@ export function createGameScene(game: g.Game, timeLimit: number, isAtsumaru: boo
 			minScore: 30,
 			messages: ["わしじゃ", "ようこそ", "ほっほっほっ", "よきに"],
 			isFestival: true,
+			onUnlock: (): void => undefined
 		}];
 
 		collaboInfos.forEach((info, i) => {
@@ -746,6 +772,9 @@ export function createGameScene(game: g.Game, timeLimit: number, isAtsumaru: boo
 					scorer,
 					castAsset: scene.asset.getImageById(`collabo_cast_tier${info.tier}`),
 					castLayer,
+					onUnlock: () => {
+						info.onUnlock();
+					},
 					onStart: (co) => {
 						collaboTweeter.show();
 						customers.forEach(obj => {
@@ -807,6 +836,34 @@ export function createGameScene(game: g.Game, timeLimit: number, isAtsumaru: boo
 			});
 		});
 
+		let isAnyAdvertise = false;
+		appendCountDown({
+			onEnd: () => {
+				if (!isAnyAdvertise) {
+					const guide = new g.Sprite({
+						scene,
+						parent: scoreLayer,
+						src: scene.asset.getImageById("guide_advertise"),
+					});
+
+					appendCountDown({
+						onStart: () => {
+							guide.x = actionLayer.width - 250 - guide.width;
+							guide.y = 100;
+							guide.modified();
+						},
+						onCount: (cnt) => {
+							guide.opacity = 0.5 + cnt / (game.fps * 6);
+							guide.modified();
+						},
+						onEnd: () => {
+							guide.destroy();
+						}
+					}, game.fps * 3, scoreLayer);
+				}
+			}
+		}, 20 * game.fps, actionLayer);
+
 		new Advertise({
 			scene,
 			panel: new g.E({
@@ -822,6 +879,7 @@ export function createGameScene(game: g.Game, timeLimit: number, isAtsumaru: boo
 			coolDown: 10 * game.fps,
 			opacity: 1,
 			onAdvertise: () => {
+				isAnyAdvertise = true;
 				for (let i = 0; i < 10; i++) {
 					customers.push(createCustomer({
 						game,

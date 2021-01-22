@@ -418,6 +418,18 @@
 			"width": 429,
 			"height": 45,
 			"path": "image/effect_allfail_details.png"
+		},
+		"guide_advertise": {
+			"type": "image",
+			"width": 200,
+			"height": 100,
+			"path": "image/guide_advertise.png"
+		},
+		"guide_collabo": {
+			"type": "image",
+			"width": 200,
+			"height": 100,
+			"path": "image/guide_collabo.png"
 		}
 	},
 	"moduleMainScripts": {},
